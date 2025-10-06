@@ -289,10 +289,12 @@ void go_to_cell(int &angle_now,int dir)
                     break;
                 case UP:
                     // log("forward");
-                    go_mm(175);
+                    go_mm(180);
                     ReadTof();
-                    if (Left<100)
-                    FixError(Left);
+                    if (Right <150 && Left < 150){
+                      target = 60;
+                      FixError(Left);                      
+                    }
                     // delay(300);
                     break;
                 case DOWN:
@@ -300,9 +302,9 @@ void go_to_cell(int &angle_now,int dir)
                     angle_now-=180;
                      TurnRight();
                      TurnRight();
-                    back_mm(70);
+                    back_mm(100);
                     go_mm(40);
-                     go_mm(175);
+                     go_mm(180);
                      ReadTof();
                      if ( Left < 110)
                        target = Left;
@@ -313,11 +315,11 @@ void go_to_cell(int &angle_now,int dir)
 
                     TurnLeft();
                     if ( Right < 110){
-                      back_mm(70);
+                      back_mm(100);
                       go_mm(40);                      
                     }
 
-                    go_mm(175);
+                    go_mm(180);
                     ReadTof();
                     if (Left < 110)
                     target = Left;
@@ -327,7 +329,7 @@ void go_to_cell(int &angle_now,int dir)
                     angle_now-=90;
                     TurnRight();
                     if ( Left < 110){
-                      back_mm(70);
+                      back_mm(100);
                       go_mm(48);                      
                     }
                     go_mm(175);
@@ -416,7 +418,7 @@ cell_info update_walls(int angle_now,int row,int col)
     ReadTof();
     if ( Front < 110)
       KeepDistance(50);
-      delay(200);
+      delay(100);
     new_cell.angle_update=angle_now;
     new_cell.walls[UP]=(Front < 110);
     new_cell.walls[DOWN]=0;
@@ -638,9 +640,6 @@ Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
 Adafruit_VL53L0X lox3 = Adafruit_VL53L0X();
 
 // this holds the measurement
-VL53L0X_RangingMeasurementData_t measure1;
-VL53L0X_RangingMeasurementData_t measure2;
-VL53L0X_RangingMeasurementData_t measure3;
 
 // ============================================================================ TOF FUNCTION ========================================
 
@@ -697,35 +696,17 @@ void setID() {
 
 void ReadTof() {
   
-  lox1.rangingTest(&measure1, false); // pass in 'true' to get debug data printout!
-  lox2.rangingTest(&measure2, false); // pass in 'true' to get debug data printout!
-   lox3.rangingTest(&measure3, false); // pass in 'true' to get debug data printout!
-
   
   // print sensor one reading
-  if(measure1.RangeStatus != 4) {     // if not out of range
-    Front = measure1.RangeMilliMeter;    
-
-
-    
-    Serial.print(Front);
-    Serial.print("   ");
-  } 
-
-  // print sensor two reading
-  if(measure2.RangeStatus != 4) {
-    Left = measure2.RangeMilliMeter;
-    Serial.print(Left);    Serial.print("   ");
-  } 
-
+    Front = lox1.readRange();    
+    // Serial.print(Front);
+    // Serial.print("   ");
+    Left = lox2.readRange();
+    // Serial.print(Left);    Serial.print("   ");
    ///Robojax.com code see video https://youtu.be/0glBk917HPg
   // // print sensor three reading
-  if(measure3.RangeStatus != 4) {
-    Right = measure3.RangeMilliMeter;
-    Serial.println(Right);
-  } 
-  
-
+     Right = lox3.readRange();
+    // Serial.println(Right);
 }
 void SetupTof(){
   pinMode(SHT_LOX1, OUTPUT);
@@ -750,8 +731,8 @@ void SetupTof(){
 
 
 // ============================================================================ Stepper setup ==========================================================================
-float speed = 500;
-int turn_step = 122;
+int speed = 700;
+int turn_step = 120;
 // D  = 67mm
 // 1 step = 1.8 degree = 200 step
 // 1 step == 1.0048
@@ -769,31 +750,31 @@ bool check = 1;
 void go_mm( int mm){                       
   // int step = mm/1.0048*16;
  int step = mm/1.00*16; 
-  speed = 1000;
+  speed = 700;
   // set direction forward
   digitalWrite(LeftDir,LeftFord);
   digitalWrite(RightDir,RightFord);
-  for (int i = 0; i < step*3/4 ; i ++){ 
+  for (int i = 0; i < step*7/8 ; i ++){ 
     digitalWrite(RightStep,HIGH);
     digitalWrite(LeftStep,HIGH); 
  
     digitalWrite(LeftStep,LOW); 
     digitalWrite(RightStep,LOW); 
     delayMicroseconds(speed); 
-      if ( speed > 500)
+      if ( speed > 300)
       speed -= 1 ;
     // else
     //   speed+= 5;
   }
     check = !check;
-    for (int i = 0; i < step/4 ; i ++){ 
+    for (int i = 0; i < step/8 ; i ++){ 
     digitalWrite(RightStep,HIGH);
     digitalWrite(LeftStep,HIGH); 
  
     digitalWrite(LeftStep,LOW); 
     digitalWrite(RightStep,LOW); 
     delayMicroseconds(speed); 
-    speed += 0.1;
+    speed += 1;
   }
 }
 void back_mm(int mm){
@@ -816,12 +797,12 @@ void back_mm(int mm){
 void TurnRight(){
   digitalWrite(LeftDir,LeftFord);
   digitalWrite(RightDir,RightBack);
-  for (int i = 0 ;  i < turn_step*8; i++){
+  for (int i = 0 ;  i < turn_step*8-40; i++){
     digitalWrite(LeftStep,HIGH);
     digitalWrite(LeftStep,LOW); 
     digitalWrite(RightStep,HIGH);
     digitalWrite(RightStep,LOW); 
-    delayMicroseconds(1000);     
+    delayMicroseconds(700);     
   }
 }
 
@@ -834,7 +815,7 @@ void TurnLeft(){
     digitalWrite(LeftStep,LOW); 
     digitalWrite(RightStep,HIGH);
     digitalWrite(RightStep,LOW); 
-    delayMicroseconds(1000);     
+    delayMicroseconds(700);     
   }
 }
 
@@ -907,7 +888,11 @@ void setup() {
   tone(14,2000,300);
   }
    SetupTof();
-  while ( touchRead(T4) > 70){}
+
+     lox1.startRangeContinuous();
+      //  lox2.startRangeContinuous();
+      //    lox3.startRangeContinuous();
+   while ( touchRead(T4) > 70){}
   tone(14,1000,100);
    ReadTof();
   target = Left;
@@ -922,21 +907,17 @@ void canchinh(){
   delay(100);
 }
 void loop() { 
-
-
-
-  go_mm(40);
-  MazeSolve();
-  
-  TurnRight();
-  TurnRight();
-  back_mm(60);
-
+  // go_mm(40);
+  // MazeSolve();
+  // TurnRight();
+  // TurnRight();
+  // back_mm(60);
   // go_mm(180);
   // go_mm(180);
   // go_mm(180);
-
-//  ReadTof();
+  int t = millis();
+  ReadTof();
+  Serial.println(millis() - t);
 }
 
 
