@@ -1,0 +1,233 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.38.0.0
+Copyright (C) 2022 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Hieu Tran, ptit, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.17
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\bin\
+C Compiler:      Armcc.exe V5.06 update 1 (build 61)
+Assembler:       Armasm.exe V5.06 update 1 (build 61)
+Linker/Locator:  ArmLink.exe V5.06 update 1 (build 61)
+Library Manager: ArmAr.exe V5.06 update 1 (build 61)
+Hex Converter:   FromElf.exe V5.06 update 1 (build 61)
+CPU DLL:         SARMCM3.DLL V5.17
+Dialog DLL:      DCM.DLL V1.13.4.0
+Target DLL:      Segger\JL2CM3.dll V2.99.16.0
+Dialog DLL:      TCM.DLL V1.14.6.0
+ 
+<h2>Project:</h2>
+D:\1.EC\stm32\HTN_Project\HTN_Project\MDK\HTN_Project.uvprojx
+Project File Date:  11/23/2025
+
+<h2>Output:</h2>
+*** Using Compiler '', folder: 'C:\Keil_v5\ARM\ARMCC\bin\'
+Rebuild target 'Project_He_Thong_Nhung'
+compiling adc.c...
+..\LIB\adc.h(8): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\LIB\adc.c: 1 warning, 0 errors
+compiling dht11.c...
+..\LIB\adc.h(8): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\LIB\dht11.c: 1 warning, 0 errors
+compiling interrupt.c...
+..\LIB\adc.h(8): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\LIB\interrupt.c(92): warning:  #1-D: last line of file ends without a newline
+  }
+..\LIB\interrupt.c: 2 warnings, 0 errors
+compiling gpio_config.c...
+..\LIB\adc.h(8): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\LIB\gpio_config.c: 1 warning, 0 errors
+compiling dma.c...
+..\LIB\adc.h(8): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\LIB\dma.c(27): warning:  #1-D: last line of file ends without a newline
+  }
+..\LIB\dma.c: 2 warnings, 0 errors
+compiling main.c...
+..\LIB\adc.h(8): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\USER\main.c(311): warning:  #1-D: last line of file ends without a newline
+  }
+..\USER\main.c: 2 warnings, 0 errors
+compiling uart.c...
+..\LIB\adc.h(8): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\LIB\uart.c: 1 warning, 0 errors
+compiling delay.c...
+..\LIB\delay.c(33): warning:  #1-D: last line of file ends without a newline
+  }
+..\LIB\delay.c: 1 warning, 0 errors
+compiling pwm.c...
+..\LIB\pwm.c(37): warning:  #1-D: last line of file ends without a newline
+  }
+..\LIB\pwm.c: 1 warning, 0 errors
+compiling LCD.c...
+..\LIB\LCD.c(82): warning:  #1-D: last line of file ends without a newline
+  }
+..\LIB\LCD.c: 1 warning, 0 errors
+compiling os_systick.c...
+compiling misc.c...
+compiling clib_arm.c...
+compiling cmsis_os2.c...
+compiling stm32f10x_exti.c...
+compiling stm32f10x_adc.c...
+compiling stm32f10x_dma.c...
+compiling stm32f10x_gpio.c...
+compiling stm32f10x_rcc.c...
+compiling stm32f10x_i2c.c...
+assembling startup_stm32f10x_md.s...
+compiling stm32f10x_tim.c...
+compiling system_stm32f10x.c...
+compiling freertos_evr.c...
+compiling list.c...
+compiling stm32f10x_usart.c...
+compiling event_groups.c...
+compiling heap_4.c...
+compiling port.c...
+compiling timers.c...
+compiling queue.c...
+compiling tasks.c...
+linking...
+Program Size: Code=13028 RO-data=288 RW-data=184 ZI-data=13176  
+".\Objects\HTN_Project.axf" - 0 Error(s), 13 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.4.0.pack
+                ARM.CMSIS.5.4.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: RTOS2 Version: 2.1.3
+   * Component: CORE Version: 5.1.2
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS-FreeRTOS.10.2.0.pack
+                ARM.CMSIS-FreeRTOS.10.2.0
+                Bundle of FreeRTOS for Cortex-M and Cortex-A
+   * Component: Config Variant: CMSIS RTOS2 Version: 10.2.0
+   * Component: Core Variant: Cortex-M Version: 10.2.0
+   * Component: Event Groups Version: 10.2.0
+   * Component: Heap Variant: Heap_4 Version: 10.2.0
+   * Component: Timers Version: 10.2.0
+   * Component: FreeRTOS Version: 10.2.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F1xx_DFP.2.1.0.pack
+                Keil.STM32F1xx_DFP.2.1.0
+                STMicroelectronics STM32F1 Series Device Support, Drivers and Examples
+   * Component: Startup Version: 1.0.0
+   * Component: ADC Version: 3.5.0
+   * Component: DMA Version: 3.5.0
+   * Component: EXTI Version: 3.5.0
+   * Component: Framework Version: 3.5.1
+   * Component: GPIO Version: 3.5.0
+   * Component: I2C Version: 3.5.0
+   * Component: RCC Version: 3.5.0
+   * Component: TIM Version: 3.5.0
+   * Component: USART Version: 3.5.0
+
+<h2>Collection of Component include folders:</h2>
+  ./RTE/Device/STM32F103C8
+  ./RTE/RTOS
+  ./RTE/_Project_He_Thong_Nhung
+  C:/Keil_v5/ARM/Pack/ARM/CMSIS-FreeRTOS/10.2.0/CMSIS/RTOS2/FreeRTOS/Include
+  C:/Keil_v5/ARM/Pack/ARM/CMSIS-FreeRTOS/10.2.0/Source/include
+  C:/Keil_v5/ARM/Pack/ARM/CMSIS-FreeRTOS/10.2.0/Source/portable/RVDS/ARM_CM3
+  C:/Keil_v5/ARM/Pack/ARM/CMSIS/5.4.0/CMSIS/Core/Include
+  C:/Keil_v5/ARM/Pack/ARM/CMSIS/5.4.0/CMSIS/RTOS2/Include
+  C:/Keil_v5/ARM/Pack/Keil/STM32F1xx_DFP/2.1.0/Device/Include
+  C:/Keil_v5/ARM/Pack/Keil/STM32F1xx_DFP/2.1.0/Device/StdPeriph_Driver/inc
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ::CMSIS:RTOS2:2.1.3 (API)
+      Include file:  CMSIS/RTOS2/Include/cmsis_os2.h
+
+   * Component: ARM.FreeRTOS::RTOS:Config:CMSIS RTOS2:10.2.0
+      Include file:  CMSIS/RTOS2/FreeRTOS/Config/ARMCM/FreeRTOSConfig.h
+
+   * Component: ARM.FreeRTOS::RTOS:Core:Cortex-M:10.2.0
+      Include file:  Source/include/semphr.h
+      Include file:  Source/include/queue.h
+      Source file:   Source/tasks.c
+      Include file:  Source/include/FreeRTOS.h
+      Source file:   Source/list.c
+      Include file:  Source/include/task.h
+      Source file:   Source/queue.c
+      Source file:   Source/portable/RVDS/ARM_CM3/port.c
+      Source file:   CMSIS/RTOS2/FreeRTOS/Source/freertos_evr.c
+
+   * Component: ARM.FreeRTOS::RTOS:Event Groups:10.2.0
+      Source file:   Source/event_groups.c
+      Include file:  Source/include/event_groups.h
+
+   * Component: ARM.FreeRTOS::RTOS:Heap:Heap_4:10.2.0
+      Source file:   Source/portable/MemMang/heap_4.c
+
+   * Component: ARM.FreeRTOS::RTOS:Timers:10.2.0
+      Include file:  Source/include/timers.h
+      Source file:   Source/timers.c
+
+   * Component: ARM::CMSIS:CORE:5.1.2
+
+   * Component: ARM::CMSIS:RTOS2:FreeRTOS:10.2.0
+      Source file:   CMSIS/RTOS2/FreeRTOS/Source/cmsis_os2.c
+      Source file:   CMSIS/RTOS2/FreeRTOS/Source/os_systick.c
+      Source file:   CMSIS/RTOS2/FreeRTOS/Source/ARM/clib_arm.c
+
+   * Component: Keil::Device:Startup:1.0.0
+      Source file:   Device/Source/ARM/STM32F1xx_OPT.s
+      Source file:   Device/Source/ARM/startup_stm32f10x_md.s
+      Include file:  RTE_Driver/Config/RTE_Device.h
+      Source file:   Device/Source/system_stm32f10x.c
+
+   * Component: Keil::Device:StdPeriph Drivers:ADC:3.5.0
+      Include file:  Device/StdPeriph_Driver/inc/stm32f10x_adc.h
+      Source file:   Device/StdPeriph_Driver/src/stm32f10x_adc.c
+
+   * Component: Keil::Device:StdPeriph Drivers:DMA:3.5.0
+      Include file:  Device/StdPeriph_Driver/inc/stm32f10x_dma.h
+      Source file:   Device/StdPeriph_Driver/src/stm32f10x_dma.c
+
+   * Component: Keil::Device:StdPeriph Drivers:EXTI:3.5.0
+      Source file:   Device/StdPeriph_Driver/src/stm32f10x_exti.c
+      Include file:  Device/StdPeriph_Driver/inc/stm32f10x_exti.h
+
+   * Component: Keil::Device:StdPeriph Drivers:Framework:3.5.1
+      Source file:   Device/StdPeriph_Driver/templates/stm32f10x_it.c
+      Include file:  Device/StdPeriph_Driver/inc/misc.h
+      Source file:   Device/StdPeriph_Driver/src/misc.c
+      Source file:   Device/StdPeriph_Driver/templates/stm32f10x_conf.h
+      Include file:  Device/StdPeriph_Driver/templates/stm32f10x_it.h
+
+   * Component: Keil::Device:StdPeriph Drivers:GPIO:3.5.0
+      Source file:   Device/StdPeriph_Driver/src/stm32f10x_gpio.c
+      Include file:  Device/StdPeriph_Driver/inc/stm32f10x_gpio.h
+
+   * Component: Keil::Device:StdPeriph Drivers:I2C:3.5.0
+      Include file:  Device/StdPeriph_Driver/inc/stm32f10x_i2c.h
+      Source file:   Device/StdPeriph_Driver/src/stm32f10x_i2c.c
+
+   * Component: Keil::Device:StdPeriph Drivers:RCC:3.5.0
+      Include file:  Device/StdPeriph_Driver/inc/stm32f10x_rcc.h
+      Source file:   Device/StdPeriph_Driver/src/stm32f10x_rcc.c
+
+   * Component: Keil::Device:StdPeriph Drivers:TIM:3.5.0
+      Source file:   Device/StdPeriph_Driver/src/stm32f10x_tim.c
+      Include file:  Device/StdPeriph_Driver/inc/stm32f10x_tim.h
+
+   * Component: Keil::Device:StdPeriph Drivers:USART:3.5.0
+      Include file:  Device/StdPeriph_Driver/inc/stm32f10x_usart.h
+      Source file:   Device/StdPeriph_Driver/src/stm32f10x_usart.c
+Build Time Elapsed:  00:00:04
+</pre>
+</body>
+</html>
