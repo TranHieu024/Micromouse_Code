@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmony Canvas - Tiệm Tranh Nghệ Thuật Cao Cấp</title>
+    <meta name="description" content="Tranh Canvas trang trí hiện đại, tối giản và sang trọng. Nâng tầm không gian sống của bạn với các bức tranh thiết kế nghệ thuật cao cấp.">
+    
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-layout">
+        <!-- 1. SIDEBAR LEFT (DANH MỤC & THÔNG TIN) -->
+        <aside class="sidebar-left" id="sidebar-left">
+            <div class="sidebar-brand">
+                Harmony <span>Canvas</span>
+            </div>
+            
+            <div class="sidebar-section-title">Danh Mục Tranh</div>
+            <nav class="sidebar-menu" id="category-menu">
+                <button class="menu-item active" data-category="Tất cả">🎨 Tất cả bộ sưu tập</button>
+                <button class="menu-item" data-category="Mật Tông">🕉️ Mật Tông</button>
+                <button class="menu-item" data-category="Mandala">☸️ Mandala</button>
+                <button class="menu-item" data-category="Tranh Thiền">🧘 Tranh Thiền</button>
+                <button class="menu-item" data-category="Trừu Tượng">🌀 Trừu Tượng</button>
+                <button class="menu-item" data-category="Hoa Lá">🌿 Hoa Lá</button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="order_history.html" class="sidebar-btn history-btn">
+                    👤 Lịch Sử Đơn Hàng
+                </a>
+                <a href="harmony_admin.html" class="sidebar-btn admin-btn">
+                    ⚙️ Quản Trị Hệ Thống
+                </a>
+            </div>
+        </aside>
+
+        <!-- 2. MAIN CENTER CONTENT (KHO TRANH) -->
+        <main class="main-content">
+            <header class="main-header-bar">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="search-input" placeholder="Tìm kiếm tranh Mật tông, Mandala, Thiền, Trừu tượng...">
+                </div>
+                
+                <div class="mobile-actions">
+                    <button class="mobile-btn" id="mobile-menu-trigger" title="Danh mục">☰</button>
+                    <button class="mobile-btn" id="mobile-cart-trigger" title="Giỏ hàng">
+                        🛒 <span class="mobile-cart-badge" id="mobile-cart-badge">0</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- Welcome/Promo Box -->
+                <div class="promo-banner">
+                    <div class="promo-content">
+                        <h2>🎁 Ưu Đãi Đặc Biệt: DIWALI15 & SPECIAL5</h2>
+                        <p>Mua 2 tranh giảm ngay 15% + Tặng khung hình bàn sang trọng. Miễn phí giao hàng toàn quốc.</p>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div class="products-wrapper">
+                    <!-- Loading placeholder -->
+                    <div id="loading-placeholder" class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Đang đồng bộ kho tranh nghệ thuật...</p>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="products-grid" id="products-container" style="display: none;">
+                        <!-- JS generated cards -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 3. SIDEBAR RIGHT (GIỎ HÀNG THƯỜNG TRỰC) -->
+        <aside class="sidebar-right" id="sidebar-right">
+            <div class="cart-header-title">
+                <h3>Giỏ Hàng Của Bạn</h3>
+                <span class="cart-badge-count" id="cart-badge">0</span>
+            </div>
+
+            <!-- List of items -->
+            <div class="cart-items-wrapper" id="cart-items-container">
+                <!-- JS generated items -->
+            </div>
+
+            <!-- Discount coupon & Summary -->
+            <div class="cart-footer-summary">
+                <div class="coupon-box">
+                    <input type="text" id="coupon-input" placeholder="Mã giảm giá (ví dụ: CANVAS10)">
+                    <button id="apply-coupon-btn">Áp Dụng</button>
+                </div>
+                <div id="coupon-msg" class="coupon-status-msg"></div>
+
+                <div class="summary-details">
+                    <div class="summary-line">
+                        <span>Tạm tính</span>
+                        <span id="cart-subtotal">0đ</span>
+                    </div>
+                    <div class="summary-line discount-line" style="display: none;" id="discount-row">
+                        <span>Giảm giá</span>
+                        <span id="cart-discount">-0đ</span>
+                    </div>
+                    <div class="summary-line total-line">
+                        <span>Tổng tiền</span>
+                        <span id="cart-total">0đ</span>
+                    </div>
+                </div>
+
+                <button class="checkout-submit-btn" id="checkout-submit-btn">
+                    Thanh Toán & Đặt Hàng
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- QUICK VIEW MODAL (CHI TIẾT & CÂU CHUYỆN) -->
+    <div class="quick-view-overlay" id="quick-view-modal">
+        <div class="quick-view-content" id="quick-view-body">
+            <button class="quick-view-close" id="quick-view-close">×</button>
+            
+            <div id="quick-view-loading" class="qv-loading-box">
+                <div class="spinner"></div>
+                <p>Đang kết nối thư viện tác phẩm...</p>
+            </div>
+
+            <div class="quick-view-layout" id="quick-view-details" style="display: none;">
+                <!-- Left: Media & Room view switcher -->
+                <div class="quick-view-gallery">
+                    <div class="qv-main-image-wrapper">
+                        <span class="sale-tag" id="qv-sale-badge">SALE</span>
+                        <img id="qv-image" src="" alt="Tranh Canvas">
+                    </div>
+                    <!-- Room selection -->
+                    <div class="room-switcher-wrapper">
+                        <span class="switcher-title">Phối Cảnh Không Gian:</span>
+                        <div class="room-buttons">
+                            <button class="room-btn active" data-room="default">🖼️ Tranh gốc</button>
+                            <button class="room-btn" data-room="living_room">🛋️ P. Khách</button>
+                            <button class="room-btn" data-room="kitchen">🍳 Nhà Bếp</button>
+                            <button class="room-btn" data-room="lobby">🏛️ Sảnh đón</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Product Info & Meta Tabs -->
+                <div class="quick-view-info">
+                    <h2 id="qv-name">Tên Tranh Canvas</h2>
+                    <div id="qv-sku" class="qv-sku-tag">Mã SP: ...</div>
+
+                    <div class="qv-price-display">
+                        <span id="qv-price" class="qv-price-new">0đ</span>
+                        <span id="qv-original-price" class="qv-price-old">0đ</span>
+                    </div>
+
+                    <!-- Details vs Story Tabs -->
+                    <div class="qv-tabs-header">
+                        <button class="qv-tab-trigger active" data-tab="tab-desc">📋 Mô tả & Khung</button>
+                        <button class="qv-tab-trigger" data-tab="tab-story">🕉️ Ý nghĩa & Câu chuyện</button>
+                    </div>
+
+                    <div class="qv-tabs-body">
+                        <!-- TAB 1: DESCRIPTION & SIZES -->
+                        <div class="qv-tab-content active" id="tab-desc">
+                            <p id="qv-description" class="qv-desc-text">Mô tả tác phẩm...</p>
+                            
+                            <div class="qv-sizes-selection">
+                                <h3>Chọn Kích Thước (Đã bao gồm khung treo):</h3>
+                                <div class="size-options" id="qv-size-options">
+                                    <!-- Injected via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: SPIRITUAL STORY -->
+                        <div class="qv-tab-content" id="tab-story">
+                            <div class="spiritual-story-box">
+                                <h4>Ý Nghĩa Phía Sau Tác Phẩm</h4>
+                                <p id="qv-story" class="qv-story-text">Câu chuyện tâm linh, năng lượng vũ trụ hoặc triết lý hội họa thiền định đằng sau bức tranh này...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="purchase-controls-wrapper">
+                        <button class="qv-btn-action qv-add-cart" id="qv-add-to-cart">
+                            THÊM GIỎ HÀNG
+                        </button>
+                        <button class="qv-btn-action qv-buy-now" id="qv-buy-now">
+                            MUA NGAY
+                        </button>
+                    </div>
+
+                    <!-- Small trust block -->
+                    <div class="qv-trust-small">
+                        <span>🛡️ Bảo hành 10 năm không phai màu</span>
+                        <span>🚚 Miễn phí ship & Đổi trả toàn quốc</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Zalo Button -->
+    <a href="https://zalo.me/0901234567" target="_blank" class="zalo-float-btn" id="zalo-floating-link" title="Nhắn tin Zalo hỗ trợ">
+        <div style="color: white; font-weight: bold; font-size: 13px; font-family: sans-serif;">Zalo</div>
+    </a>
+
+    <!-- JS Scripts -->
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedPhone = localStorage.getItem('zalo_phone') || '0901234567';
+            const zaloLink = document.getElementById('zalo-floating-link');
+            if (zaloLink) {
+                zaloLink.href = `https://zalo.me/${savedPhone}`;
+            }
+        });
+    </script>
+</body>
+</html>

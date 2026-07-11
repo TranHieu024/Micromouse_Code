@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán Đơn Hàng - Harmony Canvas</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-announcement-bar">
+        MUA 2 GIẢM 15% & TẶNG KÈM KHUNG! ƯU ĐÃI SẮP KẾT THÚC.
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <div class="container header-top-row">
+            <div class="header-left">
+                <span class="icon-search" style="font-size: 20px; cursor: pointer;">🔍</span>
+            </div>
+            
+            <a href="index.html" class="logo">
+                Harmony <span>Canvas</span>
+            </a>
+            
+            <div class="nav-actions">
+                <a href="order_history.html" class="user-icon-btn" style="font-size: 20px; text-decoration: none;">👤</a>
+                <div class="cart-dropdown-wrapper" id="cart-wrapper">
+                    <a href="checkout.html" class="cart-icon-btn" id="cart-btn" aria-label="Giỏ hàng">
+                        🛒
+                        <span class="cart-count" id="cart-badge">0</span>
+                    </a>
+                    <div class="cart-dropdown" id="cart-dropdown">
+                        <div class="cart-dropdown-empty">Giỏ hàng trống</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Nav Row -->
+        <nav class="header-bottom-row container">
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">TRANG CHỦ</a></li>
+                <li><a href="index.html#collections" class="nav-link">BỘ SƯU TẬP</a></li>
+                <li><a href="index.html#bestsellers" class="nav-link">BÁN CHẠY NHẤT</a></li>
+                <li><a href="index.html#custom" class="nav-link">TRANH CÁ NHÂN HÓA</a></li>
+                <li><a href="index.html#contact" class="nav-link">LIÊN HỆ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Breadcrumb -->
+        <div style="margin: 24px 0 8px 0; font-size: 14px; color: var(--text-secondary);">
+            <a href="index.html">← Tiếp tục xem tranh</a>
+        </div>
+
+        <div class="checkout-layout" id="checkout-container">
+            <!-- STEP 1: CART SUMMARY -->
+            <div class="checkout-card" id="step-1" style="grid-column: 1/-1; max-width: 800px; margin: 0 auto;">
+                <h2 class="checkout-section-title">Giỏ Hàng Của Bạn</h2>
+                
+                <div id="cart-items-list">
+                    <!-- Cart items will be loaded by JS -->
+                </div>
+                
+                <div class="checkout-divider"></div>
+                
+                <div style="display: flex; gap: 24px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;">
+                    <!-- Mã giảm giá -->
+                    <div style="flex: 1; min-width: 250px;">
+                        <h3 class="size-selector-title" style="margin-bottom: 8px;">Mã Giảm Giá (Nếu có)</h3>
+                        <div class="form-group coupon-row" style="margin-bottom: 8px;">
+                            <input type="text" class="form-input" id="coupon_code" placeholder="Ví dụ: CANVAS10, GIAM50K">
+                            <button type="button" class="coupon-btn" id="apply-coupon-btn">Áp Dụng</button>
+                        </div>
+                        <div id="coupon-message" style="font-size: 13px;"></div>
+                    </div>
+                    
+                    <!-- Tổng kết -->
+                    <div style="flex: 1; min-width: 250px; background: var(--bg-primary); padding: 20px; border-radius: 4px;">
+                        <div class="summary-row">
+                            <span>Tạm tính:</span>
+                            <span id="summary-subtotal">0đ</span>
+                        </div>
+                        <div class="summary-row" id="discount-row" style="display: none; color: var(--danger);">
+                            <span>Mã giảm giá áp dụng:</span>
+                            <span id="summary-discount">-0đ</span>
+                        </div>
+                        <div class="checkout-divider" style="margin: 12px 0;"></div>
+                        <div class="summary-row total">
+                            <span>Tổng cộng:</span>
+                            <span id="summary-total">0đ</span>
+                        </div>
+                        <button type="button" class="order-btn" id="next-to-step2-btn" style="margin-top: 20px;">
+                            Tiếp Theo: Đặt Hàng & Thanh Toán
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: DELIVERY & PAYMENT -->
+            <div class="checkout-card" id="step-2" style="grid-column: 1/-1; max-width: 600px; margin: 0 auto; display: none;">
+                <div style="margin-bottom: 20px;">
+                    <button type="button" id="back-to-step1-btn" style="color: var(--text-secondary); font-size: 14px; text-decoration: underline;">← Quay lại Giỏ hàng</button>
+                </div>
+                <h2 class="checkout-section-title">Thông Tin Giao Hàng & Thanh Toán</h2>
+                
+                <form id="delivery-form">
+                    <div class="form-group">
+                        <label class="form-label" for="customer_name">Họ và Tên người nhận *</label>
+                        <input type="text" class="form-input" id="customer_name" required placeholder="Nhập đầy đủ họ và tên">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="customer_phone">Số Điện Thoại nhận hàng *</label>
+                        <input type="tel" class="form-input" id="customer_phone" required placeholder="Nhập số điện thoại di động">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="customer_address">Địa Chỉ nhận tranh *</label>
+                        <input type="text" class="form-input" id="customer_address" required placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố">
+                    </div>
+                    
+                    <div class="checkout-divider"></div>
+                    
+                    <!-- Hien thi tong tien rut gon o buoc 2 -->
+                    <div style="background: var(--bg-primary); padding: 16px; border-radius: 4px; margin-bottom: 20px; text-align: center;">
+                        <span style="font-size: 14px; color: var(--text-secondary);">Bạn đang thanh toán số tiền:</span><br>
+                        <span id="step2-total-amount" style="font-size: 24px; font-weight: 700; color: var(--accent);">0đ</span>
+                    </div>
+
+                    <button type="submit" class="order-btn" id="submit-order-btn">
+                        Tạo Mã QR Thanh Toán
+                    </button>
+                </form>
+            </div>
+
+            <!-- PAYMENT QR SCREEN (Initially hidden, replaces layouts when checkout starts) -->
+            <div class="checkout-card" id="payment-section" style="grid-column: 1/-1; display: none; max-width: 600px; margin: 0 auto;">
+                <h2 class="checkout-section-title" id="payment-title">Thanh Toán Đơn Hàng</h2>
+                
+                <div class="payment-qr-container">
+                    <div class="qr-info-alert">
+                        Quét mã QR dưới đây bằng bất kỳ <b>App Ngân hàng Việt Nam</b> nào để thanh toán tự động trong 1-3 giây.
+                    </div>
+                    
+                    <div class="qr-image-wrapper">
+                        <img id="payment-qr-image" src="" alt="Mã VietQR thanh toán">
+                    </div>
+                    
+                    <div style="font-size: 18px; font-weight: bold; color: var(--accent); margin-bottom: 8px;">
+                        Số tiền: <span id="payment-amount">0đ</span>
+                    </div>
+                    
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
+                        Nội dung chuyển khoản: <b id="payment-msg">THANH TOAN DH...</b>
+                    </div>
+                    
+                    <!-- Loading / Listening block -->
+                    <div id="payment-status-message" style="margin-bottom: 24px; font-weight: 600; color: var(--success); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span class="live-pulse"></span>
+                        Đang chờ tín hiệu chuyển khoản từ ngân hàng...
+                    </div>
+
+                    <div class="payment-actions">
+                        <!-- Deep link to open bank app on phone -->
+                        <a href="#" id="bank-deep-link" class="deep-link-btn" style="display: none;">
+                            📱 Mở App Ngân Hàng Thanh Toán Nhanh
+                        </a>
+                        
+                        <!-- Simulated Success Button for testing -->
+                        <button type="button" id="mock-success-btn" class="coupon-btn" style="background-color: var(--success); height: 48px; font-weight: bold; display: none;">
+                            🧪 Giả Lập Thanh Toán Thành Công (Test Cục Bộ)
+                        </button>
+                        
+                        <!-- Zalo help btn -->
+                        <a href="#" id="zalo-help-btn" target="_blank" class="error-contact-btn">
+                            💬 Gặp lỗi thanh toán? Nhắn Zalo Hỗ Trợ
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUCCESS SCREEN -->
+            <div class="checkout-card" id="success-section" style="grid-column: 1/-1; display: none; max-width: 600px; margin: 0 auto; text-align: center; padding: 48px;">
+                <div style="font-size: 64px; color: var(--success); margin-bottom: 24px;">✓</div>
+                <h2 class="checkout-section-title" style="border: none; margin-bottom: 8px;">Thanh Toán Thành Công!</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 32px;">
+                    Cảm ơn bạn đã ủng hộ nghệ thuật canvas. Đơn hàng <b id="success-order-id">DH...</b> của bạn đã được thanh toán thành công qua ngân hàng. Chúng tôi sẽ nhanh chóng chuẩn bị tranh và giao đến bạn.
+                </p>
+                <a href="index.html" class="add-to-cart-btn" style="max-width: 240px; margin: 0 auto;">Quay Lại Cửa Hàng</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Zalo Button -->
+    <a href="https://zalo.me/0901234567" target="_blank" class="zalo-float-btn" id="zalo-floating-link" title="Nhắn tin Zalo hỗ trợ">
+        <div style="color: white; font-weight: bold; font-size: 13px; font-family: sans-serif;">Zalo</div>
+    </a>
+
+    <!-- Footer -->
+    <footer style="background-color: var(--text-primary); color: #fff; padding: 40px 0; text-align: center; margin-top: 80px; border-top: 1px solid var(--border);">
+        <div class="container">
+            <p style="font-family: var(--font-serif); font-size: 18px; margin-bottom: 12px; font-weight: 600;">Harmony Canvas</p>
+            <p style="font-size: 13px; color: #a0a0a0; margin-bottom: 24px;">Xưởng tranh canvas nghiệp dư - Giao hàng toàn quốc - Thanh toán VietQR an toàn</p>
+            <p style="font-size: 11px; color: #707070;">© 2026 Harmony Canvas. Bảo lưu mọi quyền.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        let subtotal = 0;
+        let discount = 0;
+        let appliedCoupon = null;
+        let currentOrderId = null;
+        let pollingInterval = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tự động nhận mã giảm giá đã áp dụng từ giỏ hàng
+            const savedCoupon = localStorage.getItem('harmony_coupon');
+            if (savedCoupon) {
+                try {
+                    appliedCoupon = JSON.parse(savedCoupon);
+                    const couponField = document.getElementById('coupon_code');
+                    if (couponField) couponField.value = appliedCoupon.code;
+                    const msgDiv = document.getElementById('coupon-message');
+                    if (msgDiv) {
+                        msgDiv.innerText = `✓ Đã tự động áp dụng mã giảm giá từ giỏ hàng!`;
+                        msgDiv.style.color = 'var(--success)';
+                    }
+                } catch(e) {}
+            }
+            renderCartSummary();
+            setupEventListeners();
+        });
+
+        // 1. Render Summary
+        function renderCartSummary() {
+            const listContainer = document.getElementById('cart-items-list');
+            if (state.cart.length === 0) {
+                listContainer.innerHTML = `<div style="text-align: center; padding: 24px 0; color: var(--text-secondary);">Giỏ hàng đang trống.</div>`;
+                document.getElementById('submit-order-btn').disabled = true;
+                document.getElementById('submit-order-btn').style.opacity = '0.5';
+                return;
+            }
+
+            listContainer.innerHTML = state.cart.map((item, idx) => `
+                <div class="checkout-item-row" style="align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--border);">
+                    <img src="${item.image || 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=200&auto=format&fit=crop'}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; margin-right: 16px;">
+                    <div class="checkout-item-info">
+                        <div class="checkout-item-name" style="font-size: 15px;">${item.name}</div>
+                        <div class="checkout-item-size-qty">Khung ${item.size} cm x ${item.quantity} bức</div>
+                    </div>
+                    <div class="checkout-item-price" style="margin-left: auto;">${formatVND(item.price * item.quantity)}</div>
+                    <button onclick="removeCartItem(${idx})" style="color: var(--danger); font-size: 24px; margin-left: 16px;" title="Xóa bức này">×</button>
+                </div>
+            `).join('');
+
+            subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('summary-subtotal').innerText = formatVND(subtotal);
+            updateTotal();
+        }
+
+        function removeCartItem(idx) {
+            state.cart.splice(idx, 1);
+            localStorage.setItem('harmony_cart', JSON.stringify(state.cart));
+            renderCartSummary();
+            updateCartBadge();
+        }
+
+        // Tinh tong cuoi cung
+        function updateTotal() {
+            discount = 0;
+            if (appliedCoupon) {
+                if (appliedCoupon.discount_type === 'percentage') {
+                    discount = subtotal * (appliedCoupon.discount_value / 100);
+                } else if (appliedCoupon.discount_type === 'fixed') {
+                    discount = appliedCoupon.discount_value;
+                }
+                document.getElementById('discount-row').style.display = 'flex';
+                document.getElementById('summary-discount').innerText = `-${formatVND(discount)}`;
+            } else {
+                document.getElementById('discount-row').style.display = 'none';
+            }
+
+            const total = Math.max(0, subtotal - discount);
+            document.getElementById('summary-total').innerText = formatVND(total);
+        }
+
+        // 2. Setup listeners
+        function setupEventListeners() {
+            // Navigation Steps
+            const nextBtn = document.getElementById('next-to-step2-btn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    if (state.cart.length === 0) return;
+                    document.getElementById('step-1').style.display = 'none';
+                    document.getElementById('step-2').style.display = 'block';
+                    document.getElementById('step2-total-amount').innerText = formatVND(Math.max(0, subtotal - discount));
+                });
+            }
+
+            const backBtn = document.getElementById('back-to-step1-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    document.getElementById('step-2').style.display = 'none';
+                    document.getElementById('step-1').style.display = 'block';
+                });
+            }
+
+            // Apply Coupon
+            document.getElementById('apply-coupon-btn').addEventListener('click', async () => {
+                const code = document.getElementById('coupon_code').value.trim();
+                const msgDiv = document.getElementById('coupon-message');
+                
+                if (!code) return;
+
+                try {
+                    const response = await fetch(`/api/coupons/validate/${code}`);
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.detail || 'Mã giảm giá không hợp lệ');
+                    }
+
+                    appliedCoupon = await response.json();
+                    msgDiv.innerText = `✓ Đã áp dụng mã giảm giá thành công!`;
+                    msgDiv.style.color = 'var(--success)';
+                    updateTotal();
+
+                } catch (error) {
+                    msgDiv.innerText = error.message;
+                    msgDiv.style.color = 'var(--danger)';
+                    appliedCoupon = null;
+                    updateTotal();
+                }
+            });
+
+            // Submit Order Form
+            document.getElementById('delivery-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const orderData = {
+                    customer_name: document.getElementById('customer_name').value.trim(),
+                    customer_phone: document.getElementById('customer_phone').value.trim(),
+                    customer_address: document.getElementById('customer_address').value.trim(),
+                    cart: state.cart,
+                    coupon_code: appliedCoupon ? appliedCoupon.code : null
+                };
+
+                const submitBtn = document.getElementById('submit-order-btn');
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Đang xử lý đặt hàng...';
+
+                try {
+                    const response = await fetch('/api/checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderData)
+                    });
+
+                    if (!response.ok) throw new Error('Không thể tạo đơn hàng');
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        currentOrderId = result.order_id;
+                        showPaymentScreen(result);
+                    }
+
+                } catch (error) {
+                    alert('Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.');
+                    console.error(error);
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Đặt Hàng & Thanh Toán VietQR';
+                }
+            });
+        }
+
+        // 3. Show Payment Screen
+        function showPaymentScreen(data) {
+            // Hide Form & Summary (Step 1 and Step 2)
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'none';
+
+            // Show Payment Block
+            const paymentSec = document.getElementById('payment-section');
+            paymentSec.style.display = 'block';
+
+            document.getElementById('payment-title').innerText = `Thanh Toán Đơn Hàng: ${data.order_id}`;
+            
+            const finalTotal = Math.max(0, subtotal - discount);
+            const msg = `THANH TOAN ${data.order_id}`;
+            
+            // Check for custom VietQR settings or use defaults
+            const customBank = localStorage.getItem('vietqr_bank_id') || 'MB';
+            const customAccNo = localStorage.getItem('vietqr_account_no') || '40210984379691';
+            const customAccName = localStorage.getItem('vietqr_account_name') || 'TRAN VAN HIEU';
+            
+            const nameParam = customAccName ? `&accountName=${encodeURIComponent(customAccName)}` : '';
+            const qrUrl = `https://img.vietqr.io/image/${customBank}-${customAccNo}-qr_only.png?amount=${finalTotal}&addInfo=${encodeURIComponent(msg)}${nameParam}`;
+            document.getElementById('payment-qr-image').src = qrUrl;
+            
+            document.getElementById('payment-amount').innerText = formatVND(finalTotal);
+            document.getElementById('payment-msg').innerText = msg;
+
+            // Cau hinh nut Zalo ho tro
+            const savedPhone = localStorage.getItem('zalo_phone') || '0901234567';
+            const zaloHelpBtn = document.getElementById('zalo-help-btn');
+            zaloHelpBtn.href = `https://zalo.me/${savedPhone}?text=Ho%20tro%20don%20hang%20${data.order_id}%20so%20tien%20${finalTotal}`;
+
+            // Cấu hình Deep link mở App ngân hàng (đối với điện thoại)
+            const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+            if (isMobile) {
+                const deepLinkBtn = document.getElementById('bank-deep-link');
+                deepLinkBtn.style.display = 'flex';
+                // PayOS payment url ho tro redirect tu dong tot hon deep link thuong
+                deepLinkBtn.href = data.payment_url;
+            }
+
+            // Neu day la don hang gia lap (Mock)
+            if (data.is_mock) {
+                const mockBtn = document.getElementById('mock-success-btn');
+                mockBtn.style.display = 'block';
+                mockBtn.onclick = async () => {
+                    // Goi API gia lap thanh toan webhook ve server
+                    const res = await fetch('/api/payos-webhook', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ order_id: data.order_id })
+                    });
+                    if (res.ok) {
+                        checkOrderStatus(); // Trigger success immediately
+                    }
+                };
+            }
+
+            // Start polling status check database every 3 seconds
+            pollingInterval = setInterval(checkOrderStatus, 3000);
+        }
+
+        // 4. Poll Order Status to transition to success page
+        async function checkOrderStatus() {
+            if (!currentOrderId) return;
+
+            try {
+                // Kiem tra trang thai don hang thong qua API status
+                const res = await fetch(`/api/orders/status/${currentOrderId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    if (data.status === 'PAID') {
+                        // Success! Clears cart
+                        clearInterval(pollingInterval);
+                        state.cart = [];
+                        localStorage.removeItem('harmony_cart');
+                        updateCartBadge();
+
+                        // Show Success Screen
+                        document.getElementById('payment-section').style.display = 'none';
+                        document.getElementById('success-section').style.display = 'block';
+                        document.getElementById('success-order-id').innerText = currentOrderId;
+                    }
+                }
+            } catch (error) {
+                console.error("Loi check trang thai don hang:", error);
+            }
+        }
+    </script>
+</body>
+</html>

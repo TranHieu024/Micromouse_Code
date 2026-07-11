@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Tranh - Harmony Canvas</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-announcement-bar">
+        MUA 2 GIẢM 15% & TẶNG KÈM KHUNG! ƯU ĐÃI SẮP KẾT THÚC.
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <div class="container header-top-row">
+            <div class="header-left">
+                <span class="icon-search" style="font-size: 20px; cursor: pointer;">🔍</span>
+            </div>
+            
+            <a href="index.html" class="logo">
+                Harmony <span>Canvas</span>
+            </a>
+            
+            <div class="nav-actions">
+                <a href="order_history.html" class="user-icon-btn" style="font-size: 20px; text-decoration: none;" title="Tra cứu đơn hàng">👤</a>
+                <div class="cart-dropdown-wrapper" id="cart-wrapper">
+                    <a href="checkout.html" class="cart-icon-btn" id="cart-btn" aria-label="Giỏ hàng">
+                        🛒
+                        <span class="cart-count" id="cart-badge">0</span>
+                    </a>
+                    <div class="cart-dropdown" id="cart-dropdown">
+                        <div class="cart-dropdown-empty">Giỏ hàng trống</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Nav Row -->
+        <nav class="header-bottom-row container">
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">TRANG CHỦ</a></li>
+                <li><a href="index.html#collections" class="nav-link">BỘ SƯU TẬP</a></li>
+                <li><a href="index.html#bestsellers" class="nav-link">BÁN CHẠY NHẤT</a></li>
+                <li><a href="index.html#custom" class="nav-link">TRANH CÁ NHÂN HÓA</a></li>
+                <li><a href="index.html#contact" class="nav-link">LIÊN HỆ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Product Detail Container -->
+    <main class="container">
+        <!-- Breadcrumb / Back button -->
+        <div style="margin: 24px 0 8px 0; font-size: 14px; color: var(--text-secondary);">
+            <a href="index.html">← Quay lại cửa hàng</a>
+        </div>
+
+        <div id="loading-placeholder" style="text-align: center; padding: 80px 0; color: var(--text-secondary);">
+            Đang tải thông tin bức tranh...
+        </div>
+
+        <div class="detail-layout" id="product-detail-container" style="display: none;">
+            <!-- Left: Gallery -->
+            <div class="detail-gallery">
+                <div class="main-image-container" id="main-image-container">
+                    <img id="detail-image" src="" alt="Tranh Canvas">
+                </div>
+            </div>
+
+            <!-- Right: Content & Options -->
+            <div class="detail-info">
+                <div class="detail-badge-wrapper">
+                    <span id="detail-discount-badge" class="sale-badge" style="position: static; box-shadow: none;">GIẢM --%</span>
+                </div>
+
+                <!-- Fake Countdown Timer -->
+                <div class="detail-countdown-box">
+                    <span>⚡ Khuyến mãi Hot còn:</span>
+                    <span class="detail-countdown-time countdown-timer">--:--:--</span>
+                </div>
+
+                <h1 class="detail-name" id="detail-name">Tên Tranh Canvas</h1>
+                <div id="detail-sku" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">Mã SP: ...</div>
+
+                <div class="detail-price-box">
+                    <span class="detail-price-current" id="detail-price">0đ</span>
+                    <span class="detail-price-original" id="detail-price-original">0đ</span>
+                </div>
+
+                <p class="detail-desc" id="detail-description">
+                    Mô tả chi tiết tranh canvas...
+                </p>
+
+                <!-- Social Proof Live viewers -->
+                <div class="live-social-proof">
+                    <div class="live-item">
+                        <span class="live-pulse"></span>
+                        <span id="live-viewers-count">Có 18 người đang xem tranh này</span>
+                    </div>
+                    <div class="live-item">
+                        👉 Đang được thêm vào giỏ hàng bởi 3 người khác
+                    </div>
+                    <!-- Scarcity Stock bar -->
+                    <div class="scarcity-bar-wrapper">
+                        <div class="scarcity-text">
+                            <span>Đã bán hết 87% số lượng ưu đãi</span>
+                            <span id="scarcity-stock-left" style="font-weight: 700;">Chỉ còn 3 bức</span>
+                        </div>
+                        <div class="scarcity-bar">
+                            <div class="scarcity-fill" id="scarcity-bar-fill" style="width: 87%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Size selection -->
+                <div>
+                    <h3 class="size-selector-title">Kích thước Canvas (Có sẵn khung treo)</h3>
+                    <div class="size-options" id="size-options-container">
+                        <!-- Size cards will be injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Quantity & Add to Cart -->
+                <div class="purchase-controls">
+                    <div class="quantity-selector">
+                        <button class="qty-btn" id="qty-minus">-</button>
+                        <input type="text" class="qty-input" id="qty-input" value="1" readonly>
+                        <button class="qty-btn" id="qty-plus">+</button>
+                    </div>
+                    <button class="add-to-cart-btn" id="add-to-cart-btn" style="flex: 1; background-color: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--text-primary);">Thêm Vào Giỏ Hàng</button>
+                    <button class="add-to-cart-btn" id="buy-now-btn" style="flex: 1; background-color: var(--success); color: white;">Mua Ngay</button>
+                </div>
+                
+                <!-- LUXURY TRUST BLOCK -->
+                <div class="trust-block">
+                    <div class="trust-header">
+                        <h3>LUXURY THAT LASTS – BACKED BY A 10-YEAR GUARANTEE</h3>
+                        <p>Because art this beautiful deserves protection this strong.</p>
+                    </div>
+                    <div class="trust-grid">
+                        <div class="trust-item">
+                            <div class="trust-icon">🥇</div>
+                            <h4>10-Year Warranty</h4>
+                            <p>Your Art, Protected for a Decade – We guarantee zero fading.</p>
+                        </div>
+                        <div class="trust-item">
+                            <div class="trust-icon">🖼️</div>
+                            <h4>380 GSM Canvas</h4>
+                            <p>Rich Depth & Texture – Premium gallery-quality canvas.</p>
+                        </div>
+                        <div class="trust-item">
+                            <div class="trust-icon">☀️</div>
+                            <h4>Colors Never Fade</h4>
+                            <p>UV-protected inks keep colors vibrant for 10+ years.</p>
+                        </div>
+                        <div class="trust-item">
+                            <div class="trust-icon">🛡️</div>
+                            <h4>Tough on Damage</h4>
+                            <p>Scratch-resistant coating preserves flawless beauty.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sticky Mobile Buy Bar -->
+    <div class="sticky-buy-bar" id="sticky-bar" style="display: none;">
+        <div>
+            <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">Giá Canvas</div>
+            <div id="sticky-price" style="font-weight: 700; color: var(--accent); font-size: 18px;">0đ</div>
+        </div>
+        <button class="add-to-cart-btn" id="sticky-buy-btn" style="height: 40px; padding: 0 24px; font-size: 13px;">
+            Mua Ngay
+        </button>
+    </div>
+
+    <!-- Floating Zalo Button -->
+    <a href="https://zalo.me/0901234567" target="_blank" class="zalo-float-btn" id="zalo-floating-link" title="Nhắn tin Zalo hỗ trợ">
+        <div style="color: white; font-weight: bold; font-size: 13px; font-family: sans-serif;">Zalo</div>
+    </a>
+
+    <!-- Footer -->
+    <footer style="background-color: var(--text-primary); color: #fff; padding: 40px 0; text-align: center; margin-top: 80px; border-top: 1px solid var(--border);">
+        <div class="container">
+            <p style="font-family: var(--font-serif); font-size: 18px; margin-bottom: 12px; font-weight: 600;">Harmony Canvas</p>
+            <p style="font-size: 13px; color: #a0a0a0; margin-bottom: 24px;">Xưởng tranh canvas nghiệp dư - Giao hàng toàn quốc - Thanh toán VietQR an toàn</p>
+            <p style="font-size: 11px; color: #707070;">© 2026 Harmony Canvas. Bảo lưu mọi quyền.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // State chi tiet san pham hien tai
+        let currentProduct = null;
+        let selectedSizeIndex = 0;
+
+        async function loadProductDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            if (!productId) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const container = document.getElementById('product-detail-container');
+            const placeholder = document.getElementById('loading-placeholder');
+
+            try {
+                const response = await fetch(`/api/products/${productId}`);
+                if (!response.ok) throw new Error('Khong the tai chi tiet san pham');
+                
+                currentProduct = await response.json();
+                
+                // RENDER DATA
+                document.title = `${currentProduct.name} - Harmony Canvas`;
+                document.getElementById('detail-image').src = currentProduct.images[0] || 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&auto=format&fit=crop';
+                document.getElementById('detail-name').innerText = currentProduct.name;
+                document.getElementById('detail-sku').innerText = `Mã SP: ${currentProduct.id}`;
+                document.getElementById('detail-description').innerText = currentProduct.description;
+
+                // Tinh toan Sale Badge
+                const originalPrice = currentProduct.original_price || (currentProduct.price * 1.4);
+                const discountPercent = Math.round(((originalPrice - currentProduct.price) / originalPrice) * 100);
+                if (discountPercent > 0) {
+                    document.getElementById('detail-discount-badge').innerText = `GIẢM ${discountPercent}%`;
+                } else {
+                    document.getElementById('detail-discount-badge').style.display = 'none';
+                }
+
+                // Render size options
+                const sizesContainer = document.getElementById('size-options-container');
+                sizesContainer.innerHTML = currentProduct.sizes.map((sz, idx) => {
+                    const priceDiffText = sz.extra_price > 0 ? `(+${formatVND(sz.extra_price)})` : 'Giá gốc';
+                    return `
+                        <div class="size-option-card ${idx === 0 ? 'selected' : ''}" data-index="${idx}" onclick="selectSize(${idx})">
+                            <span class="size-name">Khung ${sz.size} cm</span>
+                            <span class="size-price-diff">${priceDiffText}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                // Social proof numbers
+                const proof = getSocialProofData(currentProduct.id);
+                document.getElementById('live-viewers-count').innerText = `Có ${proof.viewers} người đang xem tranh này`;
+                document.getElementById('scarcity-stock-left').innerText = `Chỉ còn ${proof.stockLeft} bức`;
+                
+                // Ti le % cua thanh tien trinh
+                const fillPercent = 100 - (proof.stockLeft * 12);
+                document.getElementById('scarcity-bar-fill').style.width = `${fillPercent}%`;
+                document.getElementById('scarcity-bar-fill').parentElement.previousElementSibling.firstElementChild.innerText = `Đã bán hết ${fillPercent}% số lượng ưu đãi`;
+
+                // Update Price
+                updateProductPrice();
+
+                placeholder.style.display = 'none';
+                container.style.display = 'grid';
+                document.getElementById('sticky-bar').style.display = 'flex';
+
+            } catch (error) {
+                console.error('Loi detail:', error);
+                placeholder.innerText = 'Bức tranh này không tồn tại hoặc đã bị xóa. Vui lòng quay lại trang chủ.';
+            }
+        }
+
+        function selectSize(idx) {
+            selectedSizeIndex = idx;
+            document.querySelectorAll('.size-option-card').forEach((card, index) => {
+                if (index === idx) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            });
+            updateProductPrice();
+        }
+
+        function updateProductPrice() {
+            if (!currentProduct) return;
+            const sizeOption = currentProduct.sizes[selectedSizeIndex];
+            const currentPrice = currentProduct.price + sizeOption.extra_price;
+            const originalPrice = (currentProduct.original_price || (currentProduct.price * 1.4)) + sizeOption.extra_price;
+
+            document.getElementById('detail-price').innerText = formatVND(currentPrice);
+            document.getElementById('detail-price-original').innerText = formatVND(originalPrice);
+            document.getElementById('sticky-price').innerText = formatVND(currentPrice);
+        }
+
+        // Qty controls
+        const qtyInput = document.getElementById('qty-input');
+        document.getElementById('qty-plus').addEventListener('click', () => {
+            qtyInput.value = parseInt(qtyInput.value) + 1;
+        });
+        document.getElementById('qty-minus').addEventListener('click', () => {
+            const val = parseInt(qtyInput.value);
+            if (val > 1) {
+                qtyInput.value = val - 1;
+            }
+        });
+
+        // Add to Cart Event
+        function addToCart(isBuyNow = false) {
+            if (!currentProduct) return;
+            const sizeOption = currentProduct.sizes[selectedSizeIndex];
+            const price = currentProduct.price + sizeOption.extra_price;
+            
+            const cartItem = {
+                product_id: currentProduct.id,
+                name: currentProduct.name,
+                size: sizeOption.size,
+                price: price,
+                quantity: parseInt(qtyInput.value),
+                image: currentProduct.images[0]
+            };
+
+            // Check xem item da co trong gio hang chua
+            const existingIdx = state.cart.findIndex(item => item.product_id === cartItem.product_id && item.size === cartItem.size);
+            if (existingIdx > -1) {
+                state.cart[existingIdx].quantity += cartItem.quantity;
+            } else {
+                state.cart.push(cartItem);
+            }
+
+            localStorage.setItem('harmony_cart', JSON.stringify(state.cart));
+            updateCartBadge();
+            
+            if (isBuyNow) {
+                window.location.href = 'checkout.html';
+            } else {
+                // Animation button feedback
+                const btn = document.getElementById('add-to-cart-btn');
+                const origText = btn.innerText;
+                btn.innerText = '✓ ĐÃ THÊM THÀNH CÔNG';
+                btn.style.backgroundColor = 'var(--success)';
+                btn.style.color = 'white';
+                
+                // Show cart dropdown
+                const cartDropdown = document.getElementById('cart-dropdown');
+                if(cartDropdown) {
+                    cartDropdown.classList.add('show');
+                    setTimeout(() => {
+                        cartDropdown.classList.remove('show');
+                    }, 3000);
+                }
+
+                setTimeout(() => {
+                    btn.innerText = origText;
+                    btn.style.backgroundColor = 'var(--bg-primary)';
+                    btn.style.color = 'var(--text-primary)';
+                }, 1000);
+            }
+        }
+
+        document.getElementById('add-to-cart-btn').addEventListener('click', () => addToCart(false));
+        document.getElementById('buy-now-btn').addEventListener('click', () => addToCart(true));
+        document.getElementById('sticky-buy-btn').addEventListener('click', () => addToCart(true));
+
+        // Zoom Hover script (PC)
+        const gallery = document.getElementById('main-image-container');
+        const img = document.getElementById('detail-image');
+        if (gallery && img) {
+            gallery.addEventListener('mousemove', (e) => {
+                const x = e.clientX - e.target.offsetLeft;
+                const y = e.clientY - e.target.offsetTop;
+                img.style.transformOrigin = `${x}px ${y}px`;
+            });
+        }
+    </script>
+</body>
+</html>

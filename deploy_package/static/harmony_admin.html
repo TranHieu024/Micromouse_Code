@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Quản Trị - Harmony Canvas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-tab-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+        .admin-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-radius: 4px;
+        }
+        .admin-tab.active {
+            background-color: var(--accent-light);
+            color: var(--accent);
+        }
+        .admin-panel {
+            display: none;
+        }
+        .admin-panel.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--accent-light);
+            font-weight: 600;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .status-pending { background-color: #FFF9C4; color: #F57F17; }
+        .status-paid { background-color: #C8E6C9; color: #2E7D32; }
+        .status-shipped { background-color: #E3F2FD; color: #1565C0; }
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .image-preview-card {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            position: relative;
+        }
+        .image-preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                Harmony <span>Canvas</span>
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Cửa Hàng</a></li>
+                    <li><a href="admin.html" class="nav-link active">Quản Trị</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="padding: 40px 24px 80px 24px;">
+        <!-- LOGIN PANEL -->
+        <div id="admin-login-section" class="checkout-card" style="max-width: 400px; margin: 40px auto;">
+            <h2 class="checkout-section-title" style="text-align: center;">Đăng Nhập Quản Trị</h2>
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label class="form-label" for="admin-username-input">Tài Khoản</label>
+                    <input type="text" class="form-input" id="admin-username-input" placeholder="Tên đăng nhập" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="admin-token-input">Mật Khẩu</label>
+                    <input type="password" class="form-input" id="admin-token-input" placeholder="Mật khẩu" required>
+                </div>
+                <button type="submit" class="order-btn" style="height: 44px; font-size: 14px;">Đăng Nhập</button>
+            </form>
+        </div>
+
+        <!-- MAIN DASHBOARD (Initially hidden) -->
+        <div id="admin-dashboard-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h1 style="font-family: var(--font-serif); font-size: 28px;">Bảng Điều Khiển Harmony Canvas</h1>
+                <button id="admin-logout-btn" style="color: var(--danger); font-weight: bold;">Đăng Xuất</button>
+            </div>
+
+            <!-- TABS -->
+            <div class="admin-tab-container">
+                <div class="admin-tab active" onclick="switchTab('orders-tab', this)">Quản Lý Đơn Hàng</div>
+                <div class="admin-tab" onclick="switchTab('create-tab', this)">Đăng Tranh Mới</div>
+                <div class="admin-tab" onclick="switchTab('bulk-tab', this)">Đăng Nhanh Hàng Loạt</div>
+                <div class="admin-tab" onclick="switchTab('settings-tab', this)">Cài Đặt Cửa Hàng</div>
+            </div>
+
+            <!-- PANEL 1: ORDERS -->
+            <div class="admin-panel active" id="orders-tab">
+                <h3 style="margin-bottom: 12px;">Danh Sách Đơn Hàng Khách Đã Đặt</h3>
+                <div id="orders-loading" style="color: var(--text-secondary);">Đang tải đơn hàng...</div>
+                <div style="overflow-x: auto;">
+                    <table id="orders-table" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Mã Đơn</th>
+                                <th>Khách Hàng</th>
+                                <th>Số Điện Thoại</th>
+                                <th>Địa Chỉ</th>
+                                <th>Chi Tiết Giỏ Hàng</th>
+                                <th>Tổng Tiền</th>
+                                <th>Trạng Thái</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-tbody">
+                            <!-- Orders will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PANEL 2: CREATE PRODUCT -->
+            <div class="admin-panel" id="create-tab">
+                <div class="checkout-card" style="max-width: 700px;">
+                    <h3 class="checkout-section-title">Đăng Bức Tranh Mới Lên Website</h3>
+                    
+                    <form id="create-product-form">
+                        <div class="form-group">
+                            <label class="form-label" for="prod-name">Tên Bức Tranh *</label>
+                            <input type="text" class="form-input" id="prod-name" required placeholder="Ví dụ: Tranh Canvas Phong Cảnh Hoàng Hôn">
+                        </div>
+
+                        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <label class="form-label" for="prod-price">Giá Bán Khuyến Mãi (VND) *</label>
+                                <input type="number" class="form-input" id="prod-price" required placeholder="Ví dụ: 250000">
+                            </div>
+                            <div>
+                                <label class="form-label" for="prod-original-price">Giá Gốc (Để hiện tag giảm giá) *</label>
+                                <input type="number" class="form-input" id="prod-original-price" required placeholder="Ví dụ: 350000">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="prod-desc">Mô Tả Sản Phẩm *</label>
+                            <textarea class="form-input" id="prod-desc" style="height: 100px; padding: 12px; resize: vertical;" required placeholder="Thông tin chi tiết về chất liệu canvas, khung treo, ý nghĩa bức tranh..."></textarea>
+                        </div>
+
+                        <!-- Image upload using camera or computer files -->
+                        <div class="form-group">
+                            <label class="form-label">Hình Ảnh Tranh Canvas (Chụp từ điện thoại hoặc tải file) *</label>
+                            <input type="file" id="prod-image-file" accept="image/*" class="form-input" style="padding-top: 8px;">
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                                * Nếu cấu hình Cloudinary thật, ảnh sẽ tải trực tiếp lên Cloud. Nếu không, ảnh sẽ lưu ở thư mục static cục bộ.
+                            </div>
+                            <div class="image-preview-grid" id="image-previews">
+                                <!-- Image url will be appended here -->
+                            </div>
+                        </div>
+
+                        <!-- Config sizes -->
+                        <div class="form-group">
+                            <label class="form-label">Các Kích Thước Tranh & Giá Chênh Lệch</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                                <input type="text" class="form-input" id="size-name-input" placeholder="Ví dụ: 30x40">
+                                <input type="number" class="form-input" id="size-price-input" placeholder="Giá cộng thêm (VND), ví dụ: 0 hoặc 50000">
+                            </div>
+                            <button type="button" class="coupon-btn" onclick="addSizeOption()" style="height: 36px; padding: 0 16px;">+ Thêm kích thước</button>
+                            
+                            <div style="margin-top: 12px;" id="added-sizes-list">
+                                <!-- Prepopulated sizes default -->
+                            </div>
+                        </div>
+
+                        <button type="submit" class="order-btn" style="height: 48px; margin-top: 24px;">Đăng Tranh Lên Website</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- PANEL 4: BULK CREATE PRODUCTS -->
+            <div class="admin-panel" id="bulk-tab">
+                <div class="checkout-card" style="max-width: 1000px; width: 100%;">
+                    <h3 class="checkout-section-title">Đăng Nhanh Hàng Loạt Tranh (POS Mode)</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+                        <b>Quy trình đăng nhanh siêu tốc kết hợp Excel + Ảnh chụp:</b><br>
+                        <b>Bước 1:</b> Nhấp "Tải Ảnh Hàng Loạt" để chọn & tải lên toàn bộ ảnh chụp sản phẩm từ điện thoại vào thư viện.<br>
+                        <b>Bước 2:</b> Nhấp "Nhập File CSV từ Excel" để tải lên file Excel chứa thông tin Tên, Giá, Danh mục (không cần điền cột ảnh).<br>
+                        <b>Bước 3:</b> Nhấp nút <b>"Chọn ảnh"</b> ở cột đầu tiên của mỗi dòng để gán các ảnh tương ứng từ thư viện cho tranh đó.<br>
+                        <b>Bước 4:</b> Bấm "Đăng Tất Cả Lên Website" để lưu toàn bộ sản phẩm.
+                    </p>
+
+                    <!-- Step-by-Step Combined Flow -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                        <!-- Left Column: Step 1 Upload Images -->
+                        <div style="background-color: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h4 style="margin-bottom: 8px; font-size: 14px; color: var(--accent);">📷 BƯỚC 1: TẢI ẢNH HÀNG LOẠT</h4>
+                                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Tải toàn bộ ảnh sản phẩm của bạn lên thư viện ảnh tạm thời.</p>
+                            </div>
+                            <div>
+                                <input type="file" id="bulk-files-input" accept="image/*" multiple style="display: none;">
+                                <button type="button" class="coupon-btn" onclick="document.getElementById('bulk-files-input').click()" style="width: 100%; height: 44px; border: 1px solid var(--accent); color: var(--accent); font-weight: bold;">
+                                    📷 Tải Ảnh Lên Thư Viện
+                                </button>
+                                <p id="bulk-upload-status" style="font-size: 11px; margin-top: 6px; font-weight: bold; color: var(--accent);"></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Step 2 Import Excel/CSV -->
+                        <div style="background-color: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h4 style="margin-bottom: 8px; font-size: 14px; color: var(--success);">📊 BƯỚC 2: NHẬP FILE EXCEL / CSV</h4>
+                                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Tải file danh sách chữ (Tên, Giá, Danh mục...) soạn từ Excel.</p>
+                            </div>
+                            <div>
+                                <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+                                <button type="button" class="coupon-btn" onclick="document.getElementById('csv-file-input').click()" style="width: 100%; height: 44px; border: 1px solid var(--success); color: var(--success); font-weight: bold;">
+                                    📊 Nhập Dữ Liệu Excel / CSV
+                                </button>
+                                <p id="csv-import-status" style="font-size: 11px; margin-top: 6px; font-weight: bold; color: var(--success);"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Uploaded Images Pool -->
+                    <div style="margin-bottom: 8px; font-weight: bold; font-size: 13px;">🖼️ Thư viện ảnh tạm thời (Bấm nút "Chọn ảnh" ở bảng bên dưới để gán):</div>
+                    <div id="bulk-images-pool" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; border: 1px solid var(--border); padding: 12px; border-radius: 6px; background: #fff; max-height: 150px; overflow-y: auto;">
+                        <span style="color: var(--text-secondary); font-size: 13px;">Chưa có ảnh nào được tải lên.</span>
+                    </div>
+
+                    <!-- Products Table -->
+                    <div style="overflow-x: auto; margin-bottom: 20px;">
+                        <table style="min-width: 900px; font-size: 13px;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 140px;">Hình Ảnh</th>
+                                    <th style="width: 220px;">Tên Sản Phẩm *</th>
+                                    <th style="width: 130px;">Danh Mục</th>
+                                    <th style="width: 100px;">Giá bán (k)</th>
+                                    <th style="width: 100px;">Giá gốc (k)</th>
+                                    <th>Mô Tả & Ý Nghĩa (Tự động)</th>
+                                    <th style="width: 50px;">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulk-products-tbody">
+                                <!-- Tranh rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <button type="button" class="coupon-btn" onclick="addBulkProductRow()" style="width: auto; padding: 0 20px; height: 40px; border: 1px solid var(--accent); color: var(--accent);">
+                            + Thêm Sản Phẩm Mới
+                        </button>
+                        <button type="button" class="order-btn" id="bulk-save-btn" onclick="saveBulkProducts()" style="width: auto; padding: 0 32px; height: 44px; background-color: var(--success); color: white;">
+                            💾 Đăng Tất Cả Lên Website
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IMAGE SELECTOR MODAL -->
+            <div class="quick-view-overlay" id="image-selector-modal" style="z-index: 1100;">
+                <div class="quick-view-content" style="max-width: 600px; padding: 24px;">
+                    <h3 style="margin-bottom: 16px;">Chọn các ảnh cho sản phẩm này</h3>
+                    <div id="selector-images-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-height: 350px; overflow-y: auto; margin-bottom: 20px;">
+                        <!-- Uploaded images with checkboxes -->
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                        <button type="button" class="coupon-btn" onclick="closeImageSelector(false)">Hủy</button>
+                        <button type="button" class="order-btn" onclick="closeImageSelector(true)" style="width: auto; padding: 0 24px; height: 40px; background-color: var(--accent); color: white;">Xác Nhận</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 3: SETTINGS -->
+            <div class="admin-panel" id="settings-tab">
+                <div class="checkout-card" style="max-width: 500px;">
+                    <h3 class="checkout-section-title">Cấu Hình Thông Tin Hệ Thống</h3>
+                    
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label class="form-label" for="settings-zalo">Số điện thoại Zalo nhận hỗ trợ khách hàng</label>
+                            <input type="text" class="form-input" id="settings-zalo" placeholder="Ví dụ: 0901234567">
+                        </div>
+                        
+                        <div class="checkout-divider"></div>
+                        <h4 style="margin-bottom: 12px;">Cấu hình VietQR (Thanh toán tự động)</h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="settings-bank-id">Tên viết tắt Ngân Hàng (VD: MB, VCB, TCB...)</label>
+                            <input type="text" class="form-input" id="settings-bank-id" placeholder="Mặc định: MB">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="settings-account-no">Số Tài Khoản</label>
+                            <input type="text" class="form-input" id="settings-account-no" placeholder="Nhập số tài khoản nhận tiền">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="settings-account-name">Tên Chủ Tài Khoản (Không dấu)</label>
+                            <input type="text" class="form-input" id="settings-account-name" placeholder="VD: PHUONG CACH STUDIO">
+                        </div>
+                        
+                        <div class="checkout-divider"></div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="settings-token">Mật khẩu truy cập Admin (user:pass)</label>
+                            <input type="text" class="form-input" id="settings-token" placeholder="admin:harmony">
+                        </div>
+
+                        <button type="submit" class="order-btn" style="height: 44px; font-size: 14px;">Lưu Cấu Hình</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Zalo Button -->
+    <a href="https://zalo.me/0901234567" target="_blank" class="zalo-float-btn" id="zalo-floating-link" title="Nhắn tin Zalo hỗ trợ">
+        <div style="color: white; font-weight: bold; font-size: 13px; font-family: sans-serif;">Zalo</div>
+    </a>
+
+    <script src="js/main.js"></script>
+    <script>
+        let uploadedImageUrls = [];
+        let productSizes = [
+            { size: "30x40", extra_price: 0 },
+            { size: "40x60", extra_price: 80000 },
+            { size: "50x70", extra_price: 180000 }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check session login
+            const savedToken = localStorage.getItem('admin_token');
+            if (savedToken) {
+                showDashboard();
+            }
+
+            // Setup Login Form
+            document.getElementById('admin-login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('admin-username-input').value.trim();
+                const password = document.getElementById('admin-token-input').value.trim();
+                const token = username + ':' + password;
+                localStorage.setItem('admin_token', token);
+                showDashboard();
+            });
+
+            // Logout
+            document.getElementById('admin-logout-btn').addEventListener('click', () => {
+                localStorage.removeItem('admin_token');
+                window.location.reload();
+            });
+
+            // Settings Save
+            document.getElementById('settings-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const phone = document.getElementById('settings-zalo').value.trim();
+                const token = document.getElementById('settings-token').value.trim();
+                const bankId = document.getElementById('settings-bank-id').value.trim();
+                const accNo = document.getElementById('settings-account-no').value.trim();
+                const accName = document.getElementById('settings-account-name').value.trim();
+                
+                if (phone) localStorage.setItem('zalo_phone', phone);
+                if (token) localStorage.setItem('admin_token', token);
+                if (bankId) localStorage.setItem('vietqr_bank_id', bankId);
+                if (accNo) localStorage.setItem('vietqr_account_no', accNo);
+                if (accName) localStorage.setItem('vietqr_account_name', accName);
+                
+                alert('✓ Đã lưu cài đặt cửa hàng thành công.');
+                window.location.reload();
+            });
+
+            // Render sizes default list
+            renderSizesList();
+
+            // Setup Image File Upload
+            document.getElementById('prod-image-file').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const token = localStorage.getItem('admin_token') || 'harmony123';
+                
+                try {
+                    // Cung cap API upload anh
+                    const response = await fetch(`/api/admin/upload?token=${token}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) throw new Error('Upload ảnh thất bại');
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        uploadedImageUrls.push(result.url);
+                        renderImagePreviews();
+                    }
+
+                } catch (error) {
+                    alert('Lỗi: ' + error.message);
+                }
+            });
+
+            // Create Product Submit
+            document.getElementById('create-product-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (uploadedImageUrls.length === 0) {
+                    // Fallback sang anh mac dinh neu khong chon
+                    uploadedImageUrls.push('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&auto=format&fit=crop');
+                }
+
+                const productData = {
+                    name: document.getElementById('prod-name').value.trim(),
+                    price: parseFloat(document.getElementById('prod-price').value),
+                    original_price: parseFloat(document.getElementById('prod-original-price').value),
+                    description: document.getElementById('prod-desc').value.trim(),
+                    sizes: productSizes,
+                    images: uploadedImageUrls
+                };
+
+                const token = localStorage.getItem('admin_token') || 'harmony123';
+
+                try {
+                    const response = await fetch(`/api/admin/products?token=${token}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+
+                    if (!response.ok) throw new Error('Đăng sản phẩm không thành công');
+
+                    alert('✓ Bức tranh đã được đăng lên website thành công!');
+                    
+                    // Reset Form
+                    document.getElementById('create-product-form').reset();
+                    uploadedImageUrls = [];
+                    renderImagePreviews();
+                    
+                    // Switch tab ve orders
+                    switchTab('orders-tab', document.querySelector('.admin-tab'));
+
+                } catch (error) {
+                    alert('Lỗi: ' + error.message);
+                }
+            });
+        });
+
+        // Toggle Tabs
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.remove('active'));
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+
+            if (tabId === 'orders-tab') {
+                loadAdminOrders();
+            }
+        }
+
+        // Show Dashboard
+        function showDashboard() {
+            document.getElementById('admin-login-section').style.display = 'none';
+            document.getElementById('admin-dashboard-section').style.display = 'block';
+            
+            // Fill Settings inputs
+            document.getElementById('settings-zalo').value = localStorage.getItem('zalo_phone') || '0901234567';
+            document.getElementById('settings-token').value = localStorage.getItem('admin_token') || 'admin:harmony';
+            document.getElementById('settings-bank-id').value = localStorage.getItem('vietqr_bank_id') || 'MB';
+            document.getElementById('settings-account-no').value = localStorage.getItem('vietqr_account_no') || '40210984379691';
+            document.getElementById('settings-account-name').value = localStorage.getItem('vietqr_account_name') || 'TRAN VAN HIEU';
+
+            loadAdminOrders();
+        }
+
+        // Fetch Orders for admin
+        async function loadAdminOrders() {
+            const table = document.getElementById('orders-table');
+            const loading = document.getElementById('orders-loading');
+            const tbody = document.getElementById('orders-tbody');
+            
+            const token = localStorage.getItem('admin_token') || 'harmony123';
+
+            try {
+                const response = await fetch(`/api/admin/orders?token=${token}`);
+                if (!response.ok) throw new Error('Mật khẩu sai hoặc không có quyền truy cập');
+                
+                const orders = await response.json();
+                
+                if (orders.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center;">Chưa có đơn hàng nào được đặt.</td></tr>`;
+                } else {
+                    tbody.innerHTML = orders.map(order => {
+                        const cartText = order.cart.map(item => `• ${item.name} (Khung ${item.size} cm) x ${item.quantity}`).join('<br>');
+                        
+                        // Status badge logic
+                        let statusClass = 'status-pending';
+                        let statusText = 'Chờ quét QR';
+                        if (order.status === 'PAID') {
+                            statusClass = 'status-paid';
+                            statusText = 'Đã thanh toán';
+                        } else if (order.status === 'SHIPPED') {
+                            statusClass = 'status-shipped';
+                            statusText = 'Đã giao hàng';
+                        }
+
+                        return `
+                            <tr>
+                                <td><b>${order.id}</b></td>
+                                <td>${order.customer_name}</td>
+                                <td>${order.customer_phone}</td>
+                                <td>${order.customer_address}</td>
+                                <td>${cartText}</td>
+                                <td><b>${formatVND(order.total_amount)}</b></td>
+                                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <!-- Nut zalo ho tro nhanh -->
+                                    <a href="https://zalo.me/${order.customer_phone}" target="_blank" class="status-badge status-shipped" style="text-align: center; display: block; margin-bottom: 6px;">
+                                        Chat Zalo Khách
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                loading.style.display = 'none';
+                table.style.display = 'table';
+
+            } catch (error) {
+                loading.innerText = 'Lỗi truy cập dữ liệu: ' + error.message;
+                localStorage.removeItem('admin_token');
+                setTimeout(() => window.location.reload(), 2000);
+            }
+        }
+
+        // Render uploaded images previews
+        function renderImagePreviews() {
+            const container = document.getElementById('image-previews');
+            container.innerHTML = uploadedImageUrls.map((url, idx) => `
+                <div class="image-preview-card">
+                    <img src="${url}">
+                    <button type="button" onclick="removeUploadedImage(${idx})" style="position: absolute; top: 0; right: 0; background: var(--danger); color: #fff; padding: 4px 8px; font-size: 12px; font-weight: bold; border-radius: 0 0 0 4px;">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removeUploadedImage(idx) {
+            uploadedImageUrls.splice(idx, 1);
+            renderImagePreviews();
+        }
+
+        // Size Management
+        function addSizeOption() {
+            const sizeInput = document.getElementById('size-name-input');
+            const priceInput = document.getElementById('size-price-input');
+            
+            const sizeName = sizeInput.value.trim();
+            const extraPrice = parseFloat(priceInput.value) || 0;
+
+            if (!sizeName) return;
+
+            productSizes.push({ size: sizeName, extra_price: extraPrice });
+            
+            sizeInput.value = '';
+            priceInput.value = '';
+            
+            renderSizesList();
+        }
+
+        function renderSizesList() {
+            const list = document.getElementById('added-sizes-list');
+            list.innerHTML = productSizes.map((sz, idx) => `
+                <div style="display: inline-flex; align-items: center; background-color: var(--accent-light); border: 1px solid var(--accent); padding: 4px 8px; border-radius: 4px; font-size: 13px; margin-right: 8px; margin-bottom: 8px;">
+                    <span>Khung ${sz.size} cm (+${formatVND(sz.extra_price)})</span>
+                    <button type="button" onclick="removeSize(${idx})" style="margin-left: 8px; color: var(--danger); font-weight: bold; font-size: 14px;">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removeSize(idx) {
+            productSizes.splice(idx, 1);
+            renderSizesList();
+        }
+
+        // ==========================================================================
+        // BULK CREATE PRODUCTS LOGIC
+        // ==========================================================================
+        let bulkUploadedImages = [];
+        let activeRowForImageSelection = null;
+        let selectedSelectorImages = [];
+
+        // Templates for stories
+        const bulkCategoryStories = {
+            "Mật Tông": "Bức họa mang tính biểu tượng cao của Phật Giáo Mật Tông Tây Tạng. Từng nét vẽ là một lời chú niệm lành, giúp khai mở tuệ giác và kết nối năng lượng bình an từ các đấng giác ngộ.",
+            "Mandala": "Hình cát Mandala đại diện cho sự toàn vẹn của vũ trụ. Tâm điểm của bức tranh là năng lượng hội tụ, hỗ trợ hành giả đi sâu vào thiền định và cân bằng luân xa trong cơ thể.",
+            "Tranh Thiền": "Sự tối giản trong từng nét cọ mang hơi thở của Thiền tông (Zen). Bức tranh giúp tâm trí lắng dịu sau những giờ làm việc căng thẳng, đưa không gian trở về sự nguyên bản tĩnh lặng.",
+            "Trừu Tượng": "Không giới hạn bởi hình tướng, tác phẩm trừu tượng này là dòng chảy của cảm xúc và ánh sáng. Thích hợp cho những tâm hồn tự do, khai phóng khả năng sáng tạo vô hạn.",
+            "Hoa Lá": "Lấy cảm hứng từ thiên nhiên thuần khiết, bức tranh mang sinh khí tràn trề vào ngôi nhà của bạn. Vẻ đẹp nhẹ nhàng của cỏ cây xoa dịu mọi giác quan."
+        };
+
+        // When files are selected for bulk upload
+        document.getElementById('bulk-files-input').addEventListener('change', async (e) => {
+            const files = e.target.files;
+            if (files.length === 0) return;
+
+            const statusEl = document.getElementById('bulk-upload-status');
+            statusEl.innerText = `Đang chuẩn bị tải lên ${files.length} ảnh...`;
+            
+            const token = localStorage.getItem('admin_token') || 'harmony123';
+            let successCount = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                statusEl.innerText = `⏳ Đang tải lên ảnh ${i + 1}/${files.length}...`;
+                const file = files[i];
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch(`/api/admin/upload?token=${token}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (!response.ok) throw new Error();
+                    const result = await response.json();
+                    if (result.success) {
+                        bulkUploadedImages.push(result.url);
+                        successCount++;
+                    }
+                } catch (err) {
+                    console.error("Upload error for file:", file.name);
+                }
+            }
+
+            statusEl.innerText = `✓ Đã tải lên thành công ${successCount}/${files.length} ảnh.`;
+            renderBulkImagesPool();
+        });
+
+        // Render the image gallery pool
+        function renderBulkImagesPool() {
+            const pool = document.getElementById('bulk-images-pool');
+            if (bulkUploadedImages.length === 0) {
+                pool.innerHTML = `<span style="color: var(--text-secondary); font-size: 13px;">Chưa có ảnh nào được tải lên.</span>`;
+                return;
+            }
+
+            pool.innerHTML = bulkUploadedImages.map((url, idx) => `
+                <div style="position: relative; width: 60px; height: 60px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; cursor: pointer;" onclick="togglePoolImageHighlight(this, '${url}')">
+                    <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <span style="position: absolute; bottom: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; padding: 1px 3px; border-radius: 2px;">#${idx + 1}</span>
+                </div>
+            `).join('');
+        }
+
+        function togglePoolImageHighlight(el, url) {
+            // Option to highlight pool images if needed, currently no-op
+        }
+
+        // Add a bulk product row in the table
+        function addBulkProductRow() {
+            const tbody = document.getElementById('bulk-products-tbody');
+            const rowCount = tbody.children.length + 1;
+            const newRow = document.createElement('tr');
+            newRow.className = 'bulk-product-row';
+            newRow.setAttribute('data-images', '[]'); // Array of assigned images
+
+            newRow.innerHTML = `
+                <td>
+                    <div class="row-thumbnails" style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 4px;">
+                        <span style="color: var(--text-secondary); font-size: 11px;">Chưa chọn ảnh</span>
+                    </div>
+                    <button type="button" class="coupon-btn" onclick="openImageSelector(this)" style="height: 28px; padding: 0 8px; font-size: 11px; width: auto; border: 1px solid var(--accent); color: var(--accent);">Chọn ảnh</button>
+                </td>
+                <td>
+                    <input type="text" class="form-input bulk-name" placeholder="Ví dụ: Tranh Sen H0${rowCount}" required style="height: 36px; font-size: 13px; margin-bottom: 0;">
+                </td>
+                <td>
+                    <select class="form-input bulk-category" onchange="onBulkCategoryChange(this)" style="height: 36px; font-size: 13px; margin-bottom: 0; padding: 0 8px;">
+                        <option value="Mật Tông">🕉️ Mật Tông</option>
+                        <option value="Mandala">☸️ Mandala</option>
+                        <option value="Tranh Thiền">🧘 Tranh Thiền</option>
+                        <option value="Trừu Tượng">🌀 Trừu Tượng</option>
+                        <option value="Hoa Lá">🌿 Hoa Lá</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="form-input bulk-price" placeholder="250" required style="height: 36px; font-size: 13px; margin-bottom: 0;">
+                </td>
+                <td>
+                    <input type="number" class="form-input bulk-original-price" placeholder="350" required style="height: 36px; font-size: 13px; margin-bottom: 0;">
+                </td>
+                <td>
+                    <textarea class="form-input bulk-desc" style="height: 60px; font-size: 12px; padding: 6px; resize: vertical; margin-bottom: 0;" placeholder="Mô tả và ý nghĩa..."></textarea>
+                </td>
+                <td style="text-align: center;">
+                    <button type="button" onclick="this.closest('tr').remove()" style="color: var(--danger); font-size: 22px; font-weight: bold; background: none; border: none; cursor: pointer;">×</button>
+                </td>
+            `;
+
+            tbody.appendChild(newRow);
+            
+            // Trigger initial category template load
+            const categorySelect = newRow.querySelector('.bulk-category');
+            onBulkCategoryChange(categorySelect);
+        }
+
+        // When category is changed, auto-generate default templates
+        function onBulkCategoryChange(selectEl) {
+            const row = selectEl.closest('tr');
+            const category = selectEl.value;
+            const descTextarea = row.querySelector('.bulk-desc');
+            const nameInput = row.querySelector('.bulk-name');
+
+            const defaultDesc = `Bức tranh ${nameInput.value || 'Canvas'} chất lượng cao, độ bền màu trên 10 năm.`;
+            const defaultStory = bulkCategoryStories[category] || '';
+
+            descTextarea.value = `${defaultDesc}\n\n[Ý nghĩa/Câu chuyện]: ${defaultStory}`;
+        }
+
+        // Image Selector Modal Controls
+        function openImageSelector(btn) {
+            activeRowForImageSelection = btn.closest('tr');
+            const modal = document.getElementById('image-selector-modal');
+            const grid = document.getElementById('selector-images-grid');
+
+            if (bulkUploadedImages.length === 0) {
+                alert("Hãy tải ảnh lên trước khi chọn!");
+                return;
+            }
+
+            // Read already selected images for this row
+            const selectedUrls = JSON.parse(activeRowForImageSelection.getAttribute('data-images') || '[]');
+
+            grid.innerHTML = bulkUploadedImages.map((url, idx) => {
+                const isChecked = selectedUrls.includes(url) ? 'checked' : '';
+                return `
+                    <label style="border: 2px solid ${selectedUrls.includes(url) ? 'var(--accent)' : 'var(--border)'}; border-radius: 6px; overflow: hidden; aspect-ratio: 1; cursor: pointer; position: relative; display: block;" onclick="toggleSelectorBorder(this)">
+                        <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <input type="checkbox" value="${url}" ${isChecked} style="position: absolute; top: 4px; left: 4px; width: 18px; height: 18px;" onclick="event.stopPropagation();">
+                        <span style="position: absolute; bottom: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; padding: 1px 3px; border-radius: 2px;">#${idx + 1}</span>
+                    </label>
+                `;
+            }).join('');
+
+            modal.classList.add('active');
+        }
+
+        function toggleSelectorBorder(label) {
+            const checkbox = label.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            label.style.borderColor = checkbox.checked ? 'var(--accent)' : 'var(--border)';
+        }
+
+        function closeImageSelector(confirmed) {
+            const modal = document.getElementById('image-selector-modal');
+            if (confirmed && activeRowForImageSelection) {
+                const grid = document.getElementById('selector-images-grid');
+                const checkboxes = grid.querySelectorAll('input[type="checkbox"]:checked');
+                const selectedUrls = Array.from(checkboxes).map(cb => cb.value);
+
+                activeRowForImageSelection.setAttribute('data-images', JSON.stringify(selectedUrls));
+
+                // Render thumbnails in the row
+                const thumbsContainer = activeRowForImageSelection.querySelector('.row-thumbnails');
+                if (selectedUrls.length === 0) {
+                    thumbsContainer.innerHTML = `<span style="color: var(--text-secondary); font-size: 11px;">Chưa chọn ảnh</span>`;
+                } else {
+                    thumbsContainer.innerHTML = selectedUrls.map(url => `
+                        <img src="${url}" style="width: 32px; height: 32px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
+                    `).join('');
+                }
+            }
+
+            modal.classList.remove('active');
+            activeRowForImageSelection = null;
+        }
+
+        // Save and publish all bulk products
+        async function saveBulkProducts() {
+            const rows = document.querySelectorAll('.bulk-product-row');
+            if (rows.length === 0) {
+                alert("Hãy thêm ít nhất một sản phẩm!");
+                return;
+            }
+
+            const token = localStorage.getItem('admin_token') || 'harmony123';
+            const saveBtn = document.getElementById('bulk-save-btn');
+            const originalBtnText = saveBtn.innerText;
+            
+            saveBtn.disabled = true;
+            let successCount = 0;
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                saveBtn.innerText = `⏳ Đang đăng sản phẩm ${i + 1}/${rows.length}...`;
+
+                const name = row.querySelector('.bulk-name').value.trim();
+                const category = row.querySelector('.bulk-category').value;
+                const priceK = parseFloat(row.querySelector('.bulk-price').value);
+                const originalPriceK = parseFloat(row.querySelector('.bulk-original-price').value) || (priceK * 1.4);
+                const fullText = row.querySelector('.bulk-desc').value.trim();
+                const assignedImages = JSON.parse(row.getAttribute('data-images') || '[]');
+
+                if (!name || isNaN(priceK)) {
+                    alert(`Vui lòng điền đầy đủ Tên và Giá bán cho dòng số ${i + 1}`);
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = originalBtnText;
+                    return;
+                }
+
+                // Fallback to default if no image is selected
+                if (assignedImages.length === 0) {
+                    assignedImages.push('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&auto=format&fit=crop');
+                }
+
+                // Split Description and Story
+                const splitIndex = fullText.indexOf('[Ý nghĩa/Câu chuyện]:');
+                let descText = fullText;
+                let storyText = "";
+
+                if (splitIndex > -1) {
+                    descText = fullText.substring(0, splitIndex).trim();
+                    storyText = fullText.substring(splitIndex + '[Ý nghĩa/Câu chuyện]:'.length).trim();
+                }
+
+                // Build rich description JSON schema
+                const descriptionJson = {
+                    category: category,
+                    description: descText,
+                    story: storyText,
+                    context_images: {
+                        living_room: assignedImages[1] || assignedImages[0],
+                        kitchen: assignedImages[2] || '/images/harmony.jpg',
+                        lobby: assignedImages[3] || '/uploads/mandala.jpg'
+                    }
+                };
+
+                // Default standard product sizes
+                const defaultSizes = [
+                    { size: "30x40", extra_price: 0 },
+                    { size: "40x60", extra_price: 80000 },
+                    { size: "50x70", extra_price: 180000 }
+                ];
+
+                const productData = {
+                    id: `canvas-${Math.floor(100000 + Math.random() * 900000)}`,
+                    name: name,
+                    price: priceK * 1000,
+                    original_price: originalPriceK * 1000,
+                    description: JSON.stringify(descriptionJson),
+                    sizes: defaultSizes,
+                    images: assignedImages
+                };
+
+                try {
+                    const response = await fetch(`/api/admin/products?token=${token}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+                    if (response.ok) {
+                        successCount++;
+                    }
+                } catch (err) {
+                    console.error("Save product error:", name);
+                }
+            }
+
+            alert(`✓ Đã đăng thành công ${successCount}/${rows.length} tranh lên Website!`);
+            
+            // Clear table
+            document.getElementById('bulk-products-tbody').innerHTML = '';
+            bulkUploadedImages = [];
+            renderBulkImagesPool();
+            document.getElementById('bulk-upload-status').innerText = '';
+
+            saveBtn.disabled = false;
+            saveBtn.innerText = originalBtnText;
+
+            // Switch to orders tab
+            switchTab('orders-tab', document.querySelector('.admin-tab'));
+        }
+
+        // ==========================================================================
+        // CSV IMPORT & IMAGE MATCHING LOGIC
+        // ==========================================================================
+        
+        // Listen to CSV File selection
+        document.getElementById('csv-file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const text = evt.target.result;
+                parseAndPopulateCSV(text);
+            };
+            reader.readAsText(file, 'UTF-8');
+        });
+
+        // Parse CSV text and populate rows in the table
+        function parseAndPopulateCSV(text) {
+            const lines = text.split('\n');
+            if (lines.length < 2) {
+                alert("File CSV không hợp lệ hoặc rỗng!");
+                return;
+            }
+
+            // Headers parsing
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+            const nameIdx = headers.findIndex(h => h.toLowerCase().includes('tên'));
+            const catIdx = headers.findIndex(h => h.toLowerCase().includes('mục'));
+            const priceIdx = headers.findIndex(h => h.toLowerCase().includes('giá bán') || h.toLowerCase() === 'giá');
+            const origPriceIdx = headers.findIndex(h => h.toLowerCase().includes('giá gốc'));
+            const imageIdx = headers.findIndex(h => h.toLowerCase().includes('ảnh') || h.toLowerCase().includes('tên ảnh') || h.toLowerCase().includes('file'));
+            const descIdx = headers.findIndex(h => h.toLowerCase().includes('mô tả') || h.toLowerCase() === 'mota');
+            const storyIdx = headers.findIndex(h => h.toLowerCase().includes('nghĩa') || h.toLowerCase().includes('câu chuyện') || h.toLowerCase() === 'ycau chuyện');
+
+            if (nameIdx === -1 || priceIdx === -1) {
+                alert("File CSV phải chứa ít nhất cột 'Tên' và 'Giá bán'!");
+                return;
+            }
+
+            const tbody = document.getElementById('bulk-products-tbody');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            let recordCount = 0;
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                // Simple CSV splitting respecting quotes
+                const entries = [];
+                let insideQuote = false;
+                let currentEntry = '';
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    if (char === '"') {
+                        insideQuote = !insideQuote;
+                    } else if (char === ',' && !insideQuote) {
+                        entries.push(currentEntry.trim().replace(/^["']|["']$/g, ''));
+                        currentEntry = '';
+                    } else {
+                        currentEntry += char;
+                    }
+                }
+                entries.push(currentEntry.trim().replace(/^["']|["']$/g, ''));
+
+                // Extracted fields
+                const name = entries[nameIdx] || '';
+                const category = (entries[catIdx] || 'Mật Tông').trim();
+                const priceVal = parseFloat(entries[priceIdx]) || 0;
+                // Convert price to thousands if user entered e.g. 250000 -> we store 250
+                const priceK = priceVal >= 1000 ? Math.round(priceVal / 1000) : priceVal;
+                
+                let origPriceK = 0;
+                if (origPriceIdx !== -1 && entries[origPriceIdx]) {
+                    const opVal = parseFloat(entries[origPriceIdx]) || 0;
+                    origPriceK = opVal >= 1000 ? Math.round(opVal / 1000) : opVal;
+                } else {
+                    origPriceK = Math.round(priceK * 1.4);
+                }
+
+                const imageNamesStr = imageIdx !== -1 ? entries[imageIdx] : '';
+                // Split image filenames by semicolon or comma
+                const imageFilenames = imageNamesStr ? imageNamesStr.split(/[;,]/).map(f => f.trim()).filter(Boolean) : [];
+
+                const desc = descIdx !== -1 ? entries[descIdx] : `Bức tranh ${name} canvas chất lượng cao.`;
+                const story = storyIdx !== -1 ? entries[storyIdx] : (bulkCategoryStories[category] || '');
+
+                const newRow = document.createElement('tr');
+                newRow.className = 'bulk-product-row';
+                newRow.setAttribute('data-images', '[]'); // Will hold actual uploaded URLs
+                newRow.setAttribute('data-pending-filenames', JSON.stringify(imageFilenames)); // Hold filenames for matching
+
+                // Build thumbnails preview if filenames exist
+                let thumbsHtml = `<span style="color: var(--text-secondary); font-size: 11px;">Chờ chọn file ảnh</span>`;
+                if (imageFilenames.length > 0) {
+                    thumbsHtml = imageFilenames.map(fn => `
+                        <div class="pending-thumb" data-filename="${fn}" style="display: inline-block; border: 1px dashed var(--accent); padding: 2px 4px; border-radius: 4px; font-size: 10px; color: var(--accent); margin-right: 4px; margin-bottom: 4px;">
+                            ⏳ ${fn}
+                        </div>
+                    `).join('');
+                }
+
+                newRow.innerHTML = `
+                    <td>
+                        <div class="row-thumbnails" style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 4px;">
+                            ${thumbsHtml}
+                        </div>
+                        <button type="button" class="coupon-btn" onclick="openImageSelector(this)" style="height: 28px; padding: 0 8px; font-size: 11px; width: auto; border: 1px solid var(--accent); color: var(--accent);">Chọn ảnh</button>
+                    </td>
+                    <td>
+                        <input type="text" class="form-input bulk-name" value="${name}" required style="height: 36px; font-size: 13px; margin-bottom: 0;">
+                    </td>
+                    <td>
+                        <select class="form-input bulk-category" style="height: 36px; font-size: 13px; margin-bottom: 0; padding: 0 8px;">
+                            <option value="Mật Tông" ${category === 'Mật Tông' ? 'selected' : ''}>🕉️ Mật Tông</option>
+                            <option value="Mandala" ${category === 'Mandala' ? 'selected' : ''}>☸️ Mandala</option>
+                            <option value="Tranh Thiền" ${category === 'Tranh Thiền' ? 'selected' : ''}>🧘 Tranh Thiền</option>
+                            <option value="Trừu Tượng" ${category === 'Trừu Tượng' ? 'selected' : ''}>🌀 Trừu Tượng</option>
+                            <option value="Hoa Lá" ${category === 'Hoa Lá' ? 'selected' : ''}>🌿 Hoa Lá</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="form-input bulk-price" value="${priceK}" required style="height: 36px; font-size: 13px; margin-bottom: 0;">
+                    </td>
+                    <td>
+                        <input type="number" class="form-input bulk-original-price" value="${origPriceK}" required style="height: 36px; font-size: 13px; margin-bottom: 0;">
+                    </td>
+                    <td>
+                        <textarea class="form-input bulk-desc" style="height: 60px; font-size: 12px; padding: 6px; resize: vertical; margin-bottom: 0;">${desc}\n\n[Ý nghĩa/Câu chuyện]: ${story}</textarea>
+                    </td>
+                    <td style="text-align: center;">
+                        <button type="button" onclick="this.closest('tr').remove()" style="color: var(--danger); font-size: 22px; font-weight: bold; background: none; border: none; cursor: pointer;">×</button>
+                    </td>
+                `;
+
+                tbody.appendChild(newRow);
+                recordCount++;
+            }
+
+            document.getElementById('csv-import-status').innerText = `✓ Đã nhập thành công ${recordCount} sản phẩm từ CSV!`;
+            
+            // Show the matching section if any row has pending images
+            const hasImages = Array.from(document.querySelectorAll('.bulk-product-row')).some(row => {
+                const filenames = JSON.parse(row.getAttribute('data-pending-filenames') || '[]');
+                return filenames.length > 0;
+            });
+
+            if (hasImages) {
+                document.getElementById('csv-image-matching-section').style.display = 'block';
+            } else {
+                document.getElementById('csv-image-matching-section').style.display = 'none';
+            }
+        }
+
+        // Handle Image Matching File selection
+        document.getElementById('csv-images-input').addEventListener('change', async (e) => {
+            const files = e.target.files;
+            if (files.length === 0) return;
+
+            const statusSpan = document.getElementById('csv-images-match-status');
+            statusSpan.innerText = `Đang so khớp & tải lên các ảnh...`;
+
+            const token = localStorage.getItem('admin_token') || 'harmony123';
+            let matchCount = 0;
+
+            const rows = document.querySelectorAll('.bulk-product-row');
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileName = file.name.toLowerCase();
+
+                // Find rows that need this image file
+                for (let r = 0; r < rows.length; r++) {
+                    const row = rows[r];
+                    const pendingFilenames = JSON.parse(row.getAttribute('data-pending-filenames') || '[]');
+                    const assignedUrls = JSON.parse(row.getAttribute('data-images') || '[]');
+
+                    // Find match case-insensitive
+                    const matchIdx = pendingFilenames.findIndex(fn => fn.toLowerCase() === fileName);
+                    if (matchIdx > -1) {
+                        statusSpan.innerText = `⏳ Đang tải ảnh ${file.name} lên...`;
+
+                        // Upload matched image
+                        const formData = new FormData();
+                        formData.append('file', file);
+
+                        try {
+                            const response = await fetch(`/api/admin/upload?token=${token}`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            if (response.ok) {
+                                const result = await response.json();
+                                if (result.success) {
+                                    // Add to assigned urls
+                                    assignedUrls.push(result.url);
+                                    row.setAttribute('data-images', JSON.stringify(assignedUrls));
+                                    
+                                    // Add to global bulk pool so it can be re-selected manually
+                                    if (!bulkUploadedImages.includes(result.url)) {
+                                        bulkUploadedImages.push(result.url);
+                                    }
+
+                                    // Replace the pending file UI with a real thumbnail preview
+                                    const thumbsContainer = row.querySelector('.row-thumbnails');
+                                    
+                                    // Refresh thumbs
+                                    const renderedThumbs = assignedUrls.map(url => `
+                                        <img src="${url}" style="width: 32px; height: 32px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
+                                    `);
+
+                                    const remainingPending = pendingFilenames.filter((_, idx) => idx !== matchIdx);
+                                    // Update pending list
+                                    row.setAttribute('data-pending-filenames', JSON.stringify(remainingPending));
+
+                                    const remainingPendingHtml = remainingPending.map(fn => `
+                                        <div class="pending-thumb" data-filename="${fn}" style="display: inline-block; border: 1px dashed var(--accent); padding: 2px 4px; border-radius: 4px; font-size: 10px; color: var(--accent); margin-right: 4px; margin-bottom: 4px;">
+                                            ⏳ ${fn}
+                                        </div>
+                                    `);
+
+                                    thumbsContainer.innerHTML = [...renderedThumbs, ...remainingPendingHtml].join('');
+                                    matchCount++;
+                                }
+                            }
+                        } catch (err) {
+                            console.error("Upload matched error:", file.name);
+                        }
+                    }
+                }
+            }
+
+            statusSpan.innerText = `✓ Đã khớp & tải lên thành công ${matchCount} file ảnh sản phẩm.`;
+            renderBulkImagesPool();
+        });
+    </script>
+</body>
+</html>
